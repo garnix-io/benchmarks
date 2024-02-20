@@ -44,7 +44,16 @@
     in
     commandRunner
       (pkgs: {
-        deps = [ pkgs.deno pkgs.gh ];
+        deps = [
+          pkgs.deno
+          pkgs.gh
+          (pkgs.python3.withPackages (ps: [
+            ps.jupyter
+            ps.ipython
+            ps.numpy
+            ps.matplotlib
+          ]))
+        ];
         scripts =
           {
             compileData = "./benchmarking.ts compileData > output.csv";
