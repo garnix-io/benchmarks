@@ -70,6 +70,28 @@ const benchmarkGithubActionsParallel = mkBenchmarkStrategy({
   },
 });
 
+const benchmarkNixbuildNet = mkBenchmarkStrategy({
+  name: "nixbuild-net",
+  pushRepo: "garnix-io/benchmark-github",
+  async setup({ cwd, nonce }) {
+    const checkName = `nixbuild-net-${nonce}`;
+    writeNixGithubActionsYml(cwd, {
+      [checkName]: [
+            {
+               uses: "nixbuild/nixbuild-action/.github/workflows/ci-workflow.yml@v23",
+               with: {
+                 nixbuild_token: "${{ secrets.NIXBUILD_NET_TOKEN }}",
+                 filter_builds:
+                   findDerivations(cwd).map(([group, system, name]) =>
+                     `(.top_attr = ${group} and .system = ${system} and .attr = ${name})`
+                   ).join(" or ")
+               }
+            },
+    ] as const })
+    return { waitFor: [checkName] };
+  }
+});
+
 const cachixStep = () => {
   return {
     uses: "cachix/cachix-action@v11",
@@ -116,11 +138,12 @@ const benchmarkGithubActionsCachixParallel = mkBenchmarkStrategy({
 });
 
 const allStrategies = [
-  benchmarkGarnix,
-  benchmarkGithubActionsSerial,
-  benchmarkGithubActionsParallel,
-  benchmarkGithubActionsCachixSerial,
-  benchmarkGithubActionsCachixParallel,
+  // benchmarkGarnix,
+  // benchmarkGithubActionsSerial,
+  // benchmarkGithubActionsParallel,
+  benchmarkNixbuildNet,
+  // benchmarkGithubActionsCachixSerial,
+  // benchmarkGithubActionsCachixParallel,
 ];
 
 const runBenchmark = async (
