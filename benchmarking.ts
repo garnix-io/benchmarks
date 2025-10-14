@@ -71,11 +71,9 @@ const benchmarkGithubActionsParallel = mkBenchmarkStrategy({
 });
 
 const cachixStep = () => {
-  const authtoken = Deno.env.get("CACHIX_AUTH_TOKEN");
-  if (!authtoken) throw Error("CACHIX_AUTH_TOKEN must be set");
   return {
     uses: "cachix/cachix-action@v11",
-    with: { name: "benchmark", authtoken },
+    with: { name: "benchmark", authtoken: "${{ secrets.CACHIX_AUTH_TOKEN }}" },
   };
 };
 

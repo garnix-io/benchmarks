@@ -175,7 +175,7 @@ export const writeNixGithubActionsYml = (
         steps: [
           { uses: "actions/checkout@v3" },
           {
-            uses: "nixbuild/nix-quick-install-action@v19",
+            uses: "nixbuild/nix-quick-install-action@v34",
             with: {
               nix_conf: "experimental-features = nix-command flakes",
             },
