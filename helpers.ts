@@ -217,9 +217,6 @@ const getCheckTimings = async (args: {
     log(`status: ${checkSuite?.status}`);
     if (checkSuite == null) continue;
     if (checkSuite.status !== "completed") continue;
-    if (checkSuite.conclusion !== "success") {
-      throw new Error(`check suite has conclusion ${checkSuite.conclusion}.`);
-    }
     const checkRuns = await getCheckRuns({
       repo: args.repo,
       checkSuiteId: checkSuite.id,
@@ -243,6 +240,7 @@ const getCheckTimings = async (args: {
       }),
     );
     return {
+      status: checkSuite.conclusion,
       time: completed_at - new Date(checkSuite.created_at).valueOf(),
     };
   }

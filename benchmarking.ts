@@ -75,20 +75,26 @@ const benchmarkNixbuildNet = mkBenchmarkStrategy({
   pushRepo: "garnix-io/benchmark-github",
   async setup({ cwd, nonce }) {
     const checkName = `nixbuild-net-${nonce}`;
-    writeNixGithubActionsYml(cwd, {
-      [checkName]: [
-            {
-               uses: "nixbuild/nixbuild-action/.github/workflows/ci-workflow.yml@v23",
-               with: {
-                 nixbuild_token: "${{ secrets.NIXBUILD_NET_TOKEN }}",
-                 filter_builds:
-                   findDerivations(cwd).map(([group, system, name]) =>
-                     `(.top_attr = ${group} and .system = ${system} and .attr = ${name})`
-                   ).join(" or ")
-               }
-            },
-    ] as const })
-    return { waitFor: [checkName] };
+    fs.emptyDirSync(path.join(cwd, ".github/workflows"));
+    writeYml(cwd, ".github/workflows/nix.yml", {
+      name: "Nix on github",
+      on: { push: {} },
+      jobs: {
+        [checkName]: {
+           uses: "nixbuild/nixbuild-action/.github/workflows/ci-workflow.yml@v23",
+           secrets: {
+             nixbuild_token: "${{ secrets.NIXBUILD_NET_TOKEN }}",
+           },
+           with: {
+             filter_builds:
+               findDerivations(cwd).map(([group, system, name]) =>
+                 `(.top_attr == "${group}" and .system == "${system}" and .attr == "${name}")`
+               ).join(" or ")
+           }
+        }
+      },
+    });
+    return { waitFor: [`${checkName} / Summary`] };
   }
 });
 
