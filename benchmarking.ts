@@ -98,6 +98,51 @@ const benchmarkNixbuildNet = mkBenchmarkStrategy({
   }
 });
 
+const magicNixCacheStep = () => {
+  return {
+    uses: "DeterminateSystems/magic-nix-cache-action@main",
+    with: { "diagnostic-endpoint": "" },
+  };
+};
+
+const benchmarkGithubActionsMagicNixCacheSerial = mkBenchmarkStrategy({
+  name: "github-actions-magic-nix-cache-serial",
+  pushRepo: "garnix-io/benchmark-github",
+  async setup({ cwd, nonce }) {
+    const checkName = `gh-actions-magic-nix-cache-serial-${nonce}`;
+    writeNixGithubActionsYml(cwd, {
+      [checkName]: [
+        magicNixCacheStep(),
+        ...findDerivations(cwd).map((derivation) => ({
+          run: `nix build .#${derivation.join(".")}`,
+        })),
+      ],
+    });
+    return { waitFor: [checkName] };
+  },
+})
+
+const benchmarkGithubActionsMagicNixCacheParallel = mkBenchmarkStrategy({
+  name: "github-actions-magic-nix-cache-parallel",
+  pushRepo: "garnix-io/benchmark-github",
+  async setup({ cwd, nonce }) {
+    const checks = findDerivations(cwd).map(
+      ([group, system, name]) =>
+        [
+          `gh-actions-magic-nix-cache-parallel-${nonce}-${group}-${system}-${name}`,
+          [
+            magicNixCacheStep(),
+            {
+              run: `nix build .#${group}.${system}.${name}`,
+            },
+          ],
+        ] as const,
+    );
+    writeNixGithubActionsYml(cwd, Object.fromEntries(checks));
+    return { waitFor: checks.map(([name]) => name) };
+  },
+})
+
 const cachixStep = () => {
   return {
     uses: "cachix/cachix-action@v11",
@@ -147,7 +192,9 @@ const allStrategies = [
   // benchmarkGarnix,
   // benchmarkGithubActionsSerial,
   // benchmarkGithubActionsParallel,
-  benchmarkNixbuildNet,
+  benchmarkGithubActionsMagicNixCacheSerial,
+  benchmarkGithubActionsMagicNixCacheParallel,
+  // benchmarkNixbuildNet,
   // benchmarkGithubActionsCachixSerial,
   // benchmarkGithubActionsCachixParallel,
 ];
@@ -176,6 +223,7 @@ const runBenchmark = async (
       Deno.mkdirSync(path.dirname(outPath), { recursive: true });
       const result = await benchmarkStrategy.run(repoName, tmpDir, commitSha);
       Deno.writeTextFileSync(outPath, JSON.stringify(result));
+      await new Promise(resolve => setTimeout(resolve, 120 * 1000))
       return "time" in result && result.time > 0;
     });
     if (!success) {

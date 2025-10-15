@@ -172,6 +172,10 @@ export const writeNixGithubActionsYml = (
     jobs: mapValues(
       (steps) => ({
         "runs-on": "ubuntu-latest",
+        permissions: {
+          contents: "read",
+          "id-token": "write"
+        },
         steps: [
           { uses: "actions/checkout@v3" },
           {
