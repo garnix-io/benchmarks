@@ -190,11 +190,11 @@ const benchmarkGithubActionsCachixParallel = mkBenchmarkStrategy({
 
 const allStrategies = [
   benchmarkGarnix,
-  // benchmarkGithubActionsSerial,
-  //benchmarkGithubActionsParallel,
+  benchmarkGithubActionsSerial,
+  benchmarkGithubActionsParallel,
   benchmarkGithubActionsMagicNixCacheParallel,
-  // benchmarkNixbuildNet,
-  // benchmarkGithubActionsCachixParallel,
+  benchmarkNixbuildNet,
+  benchmarkGithubActionsCachixParallel,
   // I think we can't run both serial and parallel of magic nix cache and
   // cachix since they can use one another's cache
   // benchmarkGithubActionsCachixSerial,
