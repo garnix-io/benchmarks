@@ -174,7 +174,7 @@ const benchmarkGithubActionsCachixParallel = mkBenchmarkStrategy({
     const checks = findDerivations(cwd).map(
       ([group, system, name]) =>
         [
-          `gh-actions-parallel-${nonce}-${group}-${system}-${name}`,
+          `gh-actions-cachix-parallel-${nonce}-${group}-${system}-${name}`,
           [
             cachixStep(),
             {
@@ -190,15 +190,15 @@ const benchmarkGithubActionsCachixParallel = mkBenchmarkStrategy({
 
 const allStrategies = [
   benchmarkGarnix,
-  benchmarkGithubActionsSerial,
-  benchmarkGithubActionsParallel,
+  // benchmarkGithubActionsSerial,
+  //benchmarkGithubActionsParallel,
   benchmarkGithubActionsMagicNixCacheParallel,
-  benchmarkNixbuildNet,
-  benchmarkGithubActionsCachixSerial,
+  // benchmarkNixbuildNet,
+  // benchmarkGithubActionsCachixParallel,
   // I think we can't run both serial and parallel of magic nix cache and
   // cachix since they can use one another's cache
+  // benchmarkGithubActionsCachixSerial,
   // benchmarkGithubActionsMagicNixCacheSerial,
-  // benchmarkGithubActionsCachixParallel,
 ];
 
 const runBenchmark = async (
@@ -206,7 +206,7 @@ const runBenchmark = async (
   repoPath: string,
   benchmarkStrategy: ReturnType<typeof mkBenchmarkStrategy>,
 ) => {
-  const commitsToTest = getLastNCommits(repoPath, 20);
+  const commitsToTest = getLastNCommits(repoPath, 10);
   for (let idx = 0; idx < commitsToTest.length; idx++) {
     const commitSha = commitsToTest[idx];
     const success = await withTempCopy(repoPath, async (tmpDir) => {
