@@ -1,0 +1,18 @@
+# Builds that should be treated as genuine failures
+# All other builds (not listed here) will be treated as successful, regardless of their original JSON status
+# These are all the GitHub Actions Serial failures in crytic/echidna
+
+genuine_failures:
+  - repo: "crytic/echidna"
+    platform: "github-actions-serial"
+    commits:
+      - "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4"
+      - "cc1868e795634982a4fc0ce9ee4e0b30a82027f7"
+      - "4676495b78facabded36caf930ff521fdbd727ff"
+      - "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a"
+      - "b899481b65685d42d2683f758e3d59821e5a9e1f"
+      - "b314059cbb329a9896b14c438b5c8ede5f2880b8"
+      - "cda75168267ed80875862cbc671306910e62e0b9"
+      - "00f14cc2bd65b3192af0cd2b6eefb022d5a91192"
+      - "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1"
+      - "e65bd1c80b451aa05826590dd9fe69e991cda841"

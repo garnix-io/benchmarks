@@ -4,6 +4,7 @@ let allDatasets = [];
 let summaryDetailedData = {};
 let enabledRepos = new Set();
 let includeFirstCommitSummary = false;  // Default to exclude first commit
+let includeFailedBuilds = false;  // Default to exclude failed builds
 let chart = null;
 let summaryChart = null;
 let currentTab = 0;
@@ -98,34 +99,33 @@ function calculateSummaryData() {
 
     const enabledReposArray = Array.from(enabledRepos);
     const platformSlowdownFactors = {};
-    
-    console.log("=== Summary Calculation Debug ===");
-    console.log("includeFirstCommitSummary:", includeFirstCommitSummary);
-    console.log("enabledRepos:", Array.from(enabledRepos));
 
     // For each enabled repository, calculate slowdown factors
     for (const repo of enabledReposArray) {
         const repoTimes = {};
-        
-        console.log(`\n--- Repository: ${repo} ---`);
 
         // Get filtered times for this repo across all platforms
         for (const [platform, repoData] of Object.entries(summaryDetailedData)) {
             if (repoData[repo]) {
-                // Filter commits based on includeFirstCommitSummary setting
+                // Filter commits based on settings
                 const filteredCommits = repoData[repo].filter(commit => {
-                    if (commit.commit_index === 0) {
-                        return includeFirstCommitSummary;
-                    } else {
-                        return true; // Always include non-first commits
+                    // Filter by first commit setting
+                    if (commit.commit_index === 0 && !includeFirstCommitSummary) {
+                        return false;
                     }
+                    
+                    // Filter by failed builds setting (timed_out is not considered a failed build)
+                    if (commit.status === 'failure' && !includeFailedBuilds) {
+                        return false;
+                    }
+                    
+                    return true;
                 });
 
                 if (filteredCommits.length > 0) {
                     // Calculate average for this repo/platform combination
                     const avgTime = filteredCommits.reduce((sum, commit) => sum + commit.time_minutes, 0) / filteredCommits.length;
                     repoTimes[platform] = avgTime;
-                    console.log(`${platform}: ${avgTime.toFixed(2)} minutes (${filteredCommits.length} commits)`);
                 }
             }
         }
@@ -137,9 +137,6 @@ function calculateSummaryData() {
 
         // Find fastest platform for this repo
         const fastestTimeForRepo = Math.min(...Object.values(repoTimes));
-        const fastestPlatform = Object.entries(repoTimes).find(([p, t]) => t === fastestTimeForRepo)[0];
-        
-        console.log(`Fastest for ${repo}: ${fastestPlatform} (${fastestTimeForRepo.toFixed(2)} minutes)`);
 
         // Calculate slowdown factors for this repo
         for (const [platform, time] of Object.entries(repoTimes)) {
@@ -148,13 +145,11 @@ function calculateSummaryData() {
             }
             const slowdownFactor = time / fastestTimeForRepo;
             platformSlowdownFactors[platform].push(slowdownFactor);
-            console.log(`${platform}: ${slowdownFactor.toFixed(3)}x slowdown`);
         }
     }
 
     // Average the slowdown factors across repositories
     const summaryData = [];
-    console.log("\n--- Final Averages ---");
     for (const [platform, slowdownFactors] of Object.entries(platformSlowdownFactors)) {
         if (slowdownFactors.length > 0) {
             const avgSlowdownFactor = slowdownFactors.reduce((a, b) => a + b, 0) / slowdownFactors.length;
@@ -163,7 +158,6 @@ function calculateSummaryData() {
                 slowdown_factor: avgSlowdownFactor,
                 repo_count: slowdownFactors.length
             });
-            console.log(`${platform}: ${avgSlowdownFactor.toFixed(3)}x average slowdown (${slowdownFactors.map(f => f.toFixed(2)).join(', ')})`);
         }
     }
 
@@ -201,7 +195,7 @@ function createSummaryChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: `CI Performance Summary: Relative Slowdown Comparison [lower is better] (${enabledRepos.size}/${repoNames.length} repos${includeFirstCommitSummary ? ', incl. first commits' : ''})`,
+                    text: `CI Performance Summary: Relative Slowdown Comparison [lower is better] (${enabledRepos.size}/${repoNames.length} repos${includeFirstCommitSummary ? ', incl. first commits' : ''}${includeFailedBuilds ? ', incl. failed builds' : ''})`,
                     font: { size: 16 }
                 },
                 tooltip: {
@@ -284,6 +278,11 @@ function updateSummaryFirstCommitFilter() {
     createSummaryChart();
 }
 
+function updateSummaryFailedBuildsFilter() {
+    includeFailedBuilds = document.getElementById('includeFailedBuildsSummary').checked;
+    createSummaryChart();
+}
+
 function initializeDashboard() {
     // Create repository checkboxes
     createRepoCheckboxes();
@@ -340,34 +339,80 @@ const ctx = document.getElementById('performanceChart').getContext('2d');
 function filterData(datasets) {
     const includeFirst = document.getElementById('includeFirst').checked;
     const includeOthers = document.getElementById('includeOthers').checked;
+    const includeFailedBuildsChart = document.getElementById('includeFailedBuilds').checked;
 
     return datasets.map(dataset => {
         const filteredData = dataset.data.filter(point => {
-            if (point.x === 0) {
-                return includeFirst;
-            } else {
-                return includeOthers;
+            // Filter by commit position
+            if (point.x === 0 && !includeFirst) {
+                return false;
             }
+            if (point.x !== 0 && !includeOthers) {
+                return false;
+            }
+            
+            // Filter by build status (only genuine failures are filtered, not timed_out)
+            if (point.status === 'failure' && !includeFailedBuildsChart) {
+                return false;
+            }
+            
+            return true;
         });
+
+        // Separate genuine failures from successful/timed_out builds
+        // Timed out builds should have connecting lines (included in main data)
+        const mainData = filteredData.filter(point => point.status !== 'failure');
+        const failedData = filteredData.filter(point => point.status === 'failure');
 
         return {
             ...dataset,
-            data: filteredData
+            data: mainData,
+            failedData: failedData
         };
     });
 }
 
 function calculateStats(datasets) {
-    // First, collect all commit indices that exist across all platforms
+    // Get filter settings
+    const includeFirst = document.getElementById('includeFirst').checked;
+    const includeOthers = document.getElementById('includeOthers').checked;
+    const includeFailedBuildsChart = document.getElementById('includeFailedBuilds').checked;
+    
+    // Apply filtering to datasets for statistics calculation
+    const filteredForStats = datasets.map(dataset => {
+        const filteredData = dataset.data.filter(point => {
+            // Filter by commit position
+            if (point.x === 0 && !includeFirst) {
+                return false;
+            }
+            if (point.x !== 0 && !includeOthers) {
+                return false;
+            }
+            
+            // Filter by build status (only genuine failures are filtered, not timed_out)
+            if (point.status === 'failure' && !includeFailedBuildsChart) {
+                return false;
+            }
+            
+            return true;
+        });
+        
+        return {
+            ...dataset,
+            data: filteredData
+        };
+    });
+
+    // First, collect all commit indices that exist across all platforms (from filtered data)
     const allCommitIndices = new Set();
-    datasets.forEach(dataset => {
+    filteredForStats.forEach(dataset => {
         dataset.data.forEach(point => allCommitIndices.add(point.x));
     });
     const sortedIndices = Array.from(allCommitIndices).sort((a, b) => a - b);
 
     // Check if any platform is missing data
     let hasMissingData = false;
-    datasets.forEach(dataset => {
+    filteredForStats.forEach(dataset => {
         const platformIndices = new Set(dataset.data.map(d => d.x));
         if (platformIndices.size !== sortedIndices.length) {
             hasMissingData = true;
@@ -378,14 +423,20 @@ function calculateStats(datasets) {
 
     if (!hasMissingData) {
         // No missing data - calculate normally
-        datasets.forEach(dataset => {
+        filteredForStats.forEach(dataset => {
             const times = dataset.data.map(d => d.y);
             if (times.length > 0) {
+                // Check if any builds timed out (assuming 120 minutes = 2 hours timeout)
+                const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
+                const hasTimedOut = timedOutCount > 0;
+                
                 stats[dataset.label] = {
                     avg: times.reduce((a, b) => a + b, 0) / times.length,
                     min: Math.min(...times),
                     max: Math.max(...times),
                     count: times.length,
+                    timedOutCount: timedOutCount,
+                    hasTimedOut: hasTimedOut,
                     isProjected: false
                 };
             }
@@ -396,13 +447,13 @@ function calculateStats(datasets) {
         // Calculate speed factors for each platform relative to others
         const platformSpeedFactors = {};
 
-        datasets.forEach(dataset => {
+        filteredForStats.forEach(dataset => {
             const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
             let totalSpeedFactor = 0;
             let comparisons = 0;
 
             // Compare with other platforms for overlapping commits
-            datasets.forEach(otherDataset => {
+            filteredForStats.forEach(otherDataset => {
                 if (dataset.label === otherDataset.label) return;
 
                 const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
@@ -428,7 +479,7 @@ function calculateStats(datasets) {
         });
 
         // Calculate projected averages
-        datasets.forEach(dataset => {
+        filteredForStats.forEach(dataset => {
             const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
             const actualTimes = dataset.data.map(d => d.y);
 
@@ -450,7 +501,7 @@ function calculateStats(datasets) {
                     let projectedValue = 0;
                     let sourceCount = 0;
 
-                    datasets.forEach(otherDataset => {
+                    filteredForStats.forEach(otherDataset => {
                         if (dataset.label === otherDataset.label) return;
                         const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
 
@@ -472,6 +523,10 @@ function calculateStats(datasets) {
 
             const actualAvg = actualTimes.length > 0 ? actualTimes.reduce((a, b) => a + b, 0) / actualTimes.length : 0;
             const projectedAvg = totalCount > 0 ? projectedSum / totalCount : 0;
+            
+            // Check for timed out builds in projected method
+            const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
+            const hasTimedOut = timedOutCount > 0;
 
             stats[dataset.label] = {
                 avg: projectedAvg,
@@ -481,6 +536,8 @@ function calculateStats(datasets) {
                 count: actualTimes.length,
                 totalCount: totalCount,
                 missingCount: missingCount,
+                timedOutCount: timedOutCount,
+                hasTimedOut: hasTimedOut,
                 isProjected: missingCount > 0,
                 speedFactor: speedFactor
             };
@@ -496,10 +553,51 @@ function createChart(datasets, repoName) {
     }
 
     const filteredDatasets = filterData(datasets);
+    
+    // Create datasets with single continuous line per platform
+    const chartDatasets = [];
+    
+    filteredDatasets.forEach(dataset => {
+        // Create main dataset with all builds (success + timed_out) in one continuous line
+        if (dataset.data.length > 0) {
+            chartDatasets.push({
+                ...dataset,
+                showLine: true,
+                // Use a function to dynamically set point styles based on data status
+                pointStyle: function(context) {
+                    const point = context.parsed ? dataset.data[context.dataIndex] : null;
+                    if (!point) return 'circle';
+                    return point.status === 'timed_out' ? 'triangle' : 'circle';
+                },
+                pointRadius: function(context) {
+                    const point = context.parsed ? dataset.data[context.dataIndex] : null;
+                    if (!point) return 4;
+                    return point.status === 'timed_out' ? 5 : 4;
+                }
+            });
+        }
+        
+        // Add failed builds (crosses) - no line connecting them
+        if (dataset.failedData && dataset.failedData.length > 0) {
+            chartDatasets.push({
+                ...dataset,
+                data: dataset.failedData,
+                pointStyle: 'cross',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                showLine: false,
+                fill: false,
+                label: dataset.label + ' (failed)', // Distinguish in legend
+                borderColor: dataset.borderColor,
+                backgroundColor: dataset.backgroundColor,
+                borderWidth: 2
+            });
+        }
+    });
 
     chart = new Chart(ctx, {
         type: 'line',
-        data: { datasets: filteredDatasets },
+        data: { datasets: chartDatasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -523,7 +621,13 @@ function createChart(datasets, repoName) {
                         label: function(context) {
                             const time = context.parsed.y.toFixed(1);
                             const branch = context.raw.branch_name || 'main';
-                            return `${context.dataset.label}: ${time} minutes (branch: ${branch})`;
+                            let status = '';
+                            if (context.raw.status === 'failure') {
+                                status = ' (FAILED)';
+                            } else if (context.raw.status === 'timed_out') {
+                                status = ' (TIMED OUT - 2+ HOURS)';
+                            }
+                            return `${context.dataset.label}: ${time} minutes (branch: ${branch})${status}`;
                         }
                     }
                 },
@@ -570,26 +674,85 @@ function updateStats(datasets) {
 
     Object.entries(stats).forEach(([platform, stat]) => {
         const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
-        const asterisk = stat.isProjected ? '*' : '';
-        const tooltip = stat.isProjected
-            ? `title="Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)"`
-            : '';
+        
+        // Determine asterisk and tooltip text
+        let asterisk = '';
+        let tooltipText = '';
+        
+        if (stat.isProjected && stat.hasTimedOut) {
+            asterisk = '**';
+            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some builds timed out (took longer than 2 hours). These were counted as taking 2 hours.`;
+        } else if (stat.isProjected) {
+            asterisk = '*';
+            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)`;
+        } else if (stat.hasTimedOut) {
+            asterisk = '*';
+            tooltipText = `Some builds timed out (took longer than 2 hours). These were counted as taking 2 hours.`;
+        }
 
-        statsContainer.innerHTML += `
-            <div class="stat-card" ${tooltip}>
-                <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
-                <div class="stat-label">${platform}<br>Average Time (${stat.count}/${stat.totalCount || stat.count} commits)</div>
-            </div>
+        // Create the div element properly
+        const statCard = document.createElement('div');
+        statCard.className = 'stat-card';
+        if (tooltipText) {
+            statCard.setAttribute('data-tooltip', tooltipText);
+        }
+        
+        statCard.innerHTML = `
+            <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
+            <div class="stat-label">${platform}<br>Average Time (${stat.count}/${stat.totalCount || stat.count} commits)</div>
         `;
+        
+        statsContainer.appendChild(statCard);
     });
 }
 
 function updateChart() {
     if (currentTab >= 0) {
         const filteredDatasets = filterData(allDatasets[currentTab]);
+        
+        // Create datasets with single continuous line per platform (same logic as createChart)
+        const chartDatasets = [];
+        
+        filteredDatasets.forEach(dataset => {
+            // Create main dataset with all builds (success + timed_out) in one continuous line
+            if (dataset.data.length > 0) {
+                chartDatasets.push({
+                    ...dataset,
+                    showLine: true,
+                    // Use a function to dynamically set point styles based on data status
+                    pointStyle: function(context) {
+                        const point = context.parsed ? dataset.data[context.dataIndex] : null;
+                        if (!point) return 'circle';
+                        return point.status === 'timed_out' ? 'triangle' : 'circle';
+                    },
+                    pointRadius: function(context) {
+                        const point = context.parsed ? dataset.data[context.dataIndex] : null;
+                        if (!point) return 4;
+                        return point.status === 'timed_out' ? 5 : 4;
+                    }
+                });
+            }
+            
+            // Add failed builds (crosses) - no line connecting them
+            if (dataset.failedData && dataset.failedData.length > 0) {
+                chartDatasets.push({
+                    ...dataset,
+                    data: dataset.failedData,
+                    pointStyle: 'cross',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    showLine: false,
+                    fill: false,
+                    label: dataset.label + ' (failed)', // Distinguish in legend
+                    borderColor: dataset.borderColor,
+                    backgroundColor: dataset.backgroundColor,
+                    borderWidth: 2
+                });
+            }
+        });
 
         // Update chart data
-        chart.data.datasets = filteredDatasets;
+        chart.data.datasets = chartDatasets;
         chart.update();
 
         // Update statistics

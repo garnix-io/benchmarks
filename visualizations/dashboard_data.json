@@ -13,61 +13,71 @@
             "x": 0,
             "y": 31.5,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721361721"
+            "branch_name": "test-run-1760721361721",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 31.016666666666666,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721361727"
+            "branch_name": "test-run-1760721361727",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 31.083333333333332,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721361734"
+            "branch_name": "test-run-1760721361734",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 30.633333333333333,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721361743"
+            "branch_name": "test-run-1760721361743",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 30.4,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721361750"
+            "branch_name": "test-run-1760721361750",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 31.016666666666666,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721361756"
+            "branch_name": "test-run-1760721361756",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 30.816666666666666,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721361761"
+            "branch_name": "test-run-1760721361761",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 31.4,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721361763"
+            "branch_name": "test-run-1760721361763",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 31.833333333333332,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721361764"
+            "branch_name": "test-run-1760721361764",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 30.933333333333334,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721361766"
+            "branch_name": "test-run-1760721361766",
+            "status": "success"
           }
         ],
         "borderColor": "#2196F3",
@@ -84,61 +94,71 @@
             "x": 0,
             "y": 52.03333333333333,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721218593"
+            "branch_name": "test-run-1760721218593",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 35.8,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721218597"
+            "branch_name": "test-run-1760721218597",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 46.6,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721218601"
+            "branch_name": "test-run-1760721218601",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 42.45,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721218606"
+            "branch_name": "test-run-1760721218606",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 39.983333333333334,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721218607"
+            "branch_name": "test-run-1760721218607",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 50.61666666666667,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721218608"
+            "branch_name": "test-run-1760721218608",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 50.0,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721218609"
+            "branch_name": "test-run-1760721218609",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 39.25,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721218610"
+            "branch_name": "test-run-1760721218610",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 40.5,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721218611"
+            "branch_name": "test-run-1760721218611",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 38.95,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721218612"
+            "branch_name": "test-run-1760721218612",
+            "status": "success"
           }
         ],
         "borderColor": "#607D8B",
@@ -155,61 +175,71 @@
             "x": 0,
             "y": 47.8,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721361723"
+            "branch_name": "test-run-1760721361723",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 16.883333333333333,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721361730"
+            "branch_name": "test-run-1760721361730",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 12.883333333333333,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721361736"
+            "branch_name": "test-run-1760721361736",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 16.233333333333334,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721361739"
+            "branch_name": "test-run-1760721361739",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 20.966666666666665,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721361744"
+            "branch_name": "test-run-1760721361744",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 12.866666666666667,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721361749"
+            "branch_name": "test-run-1760721361749",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 10.283333333333333,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721361752"
+            "branch_name": "test-run-1760721361752",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 17.433333333333334,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721361754"
+            "branch_name": "test-run-1760721361754",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 13.6,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721361758"
+            "branch_name": "test-run-1760721361758",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 12.416666666666666,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721361760"
+            "branch_name": "test-run-1760721361760",
+            "status": "success"
           }
         ],
         "borderColor": "#607D8B",
@@ -226,61 +256,71 @@
             "x": 0,
             "y": 34.13333333333333,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721361724"
+            "branch_name": "test-run-1760721361724",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 17.933333333333334,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721361729"
+            "branch_name": "test-run-1760721361729",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 17.483333333333334,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721361733"
+            "branch_name": "test-run-1760721361733",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 17.566666666666666,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721361737"
+            "branch_name": "test-run-1760721361737",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 17.8,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721361742"
+            "branch_name": "test-run-1760721361742",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 19.5,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721361747"
+            "branch_name": "test-run-1760721361747",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 7.516666666666667,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721361751"
+            "branch_name": "test-run-1760721361751",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 17.55,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721361753"
+            "branch_name": "test-run-1760721361753",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 17.216666666666665,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721361757"
+            "branch_name": "test-run-1760721361757",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 15.916666666666666,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721361759"
+            "branch_name": "test-run-1760721361759",
+            "status": "success"
           }
         ],
         "borderColor": "#9C27B0",
@@ -297,61 +337,71 @@
             "x": 0,
             "y": 20.266666666666666,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721218594"
+            "branch_name": "test-run-1760721218594",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 11.733333333333333,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721218595"
+            "branch_name": "test-run-1760721218595",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 15.883333333333333,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721218596"
+            "branch_name": "test-run-1760721218596",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 11.383333333333333,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721361732"
+            "branch_name": "test-run-1760721361732",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 10.616666666666667,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721218599"
+            "branch_name": "test-run-1760721218599",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 9.7,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721361738"
+            "branch_name": "test-run-1760721361738",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 1.7,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721361740"
+            "branch_name": "test-run-1760721361740",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 13.216666666666667,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721218603"
+            "branch_name": "test-run-1760721218603",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 11.25,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721361746"
+            "branch_name": "test-run-1760721361746",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 14.783333333333333,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721218605"
+            "branch_name": "test-run-1760721218605",
+            "status": "success"
           }
         ],
         "borderColor": "#4CAF50",
@@ -368,61 +418,71 @@
             "x": 0,
             "y": 50.25,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
-            "branch_name": "test-run-1760721361722"
+            "branch_name": "test-run-1760721361722",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 53.31666666666667,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
-            "branch_name": "test-run-1760721361731"
+            "branch_name": "test-run-1760721361731",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 50.516666666666666,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
-            "branch_name": "test-run-1760721361745"
+            "branch_name": "test-run-1760721361745",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 50.68333333333333,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
-            "branch_name": "test-run-1760721361755"
+            "branch_name": "test-run-1760721361755",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 49.78333333333333,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
-            "branch_name": "test-run-1760721361762"
+            "branch_name": "test-run-1760721361762",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 50.0,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
-            "branch_name": "test-run-1760721361765"
+            "branch_name": "test-run-1760721361765",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 49.95,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
-            "branch_name": "test-run-1760721361767"
+            "branch_name": "test-run-1760721361767",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 49.7,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
-            "branch_name": "test-run-1760721361768"
+            "branch_name": "test-run-1760721361768",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 49.78333333333333,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
-            "branch_name": "test-run-1760721361769"
+            "branch_name": "test-run-1760721361769",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 50.55,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
-            "branch_name": "test-run-1760721361770"
+            "branch_name": "test-run-1760721361770",
+            "status": "success"
           }
         ],
         "borderColor": "#FF9800",
@@ -441,61 +501,71 @@
             "x": 0,
             "y": 120.0,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836808"
+            "branch_name": "test-run-1760773836808",
+            "status": "timed_out"
           },
           {
             "x": 1,
             "y": 120.0,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836822"
+            "branch_name": "test-run-1760773836822",
+            "status": "timed_out"
           },
           {
             "x": 2,
             "y": 120.0,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836834"
+            "branch_name": "test-run-1760773836834",
+            "status": "timed_out"
           },
           {
             "x": 3,
             "y": 120.0,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836847"
+            "branch_name": "test-run-1760773836847",
+            "status": "timed_out"
           },
           {
             "x": 4,
             "y": 120.0,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836852"
+            "branch_name": "test-run-1760773836852",
+            "status": "timed_out"
           },
           {
             "x": 5,
             "y": 120.0,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836856"
+            "branch_name": "test-run-1760773836856",
+            "status": "timed_out"
           },
           {
             "x": 6,
             "y": 120.0,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836858"
+            "branch_name": "test-run-1760773836858",
+            "status": "timed_out"
           },
           {
             "x": 7,
             "y": 120.0,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836860"
+            "branch_name": "test-run-1760773836860",
+            "status": "timed_out"
           },
           {
             "x": 8,
             "y": 120.0,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836862"
+            "branch_name": "test-run-1760773836862",
+            "status": "timed_out"
           },
           {
             "x": 9,
             "y": 120.0,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836864"
+            "branch_name": "test-run-1760773836864",
+            "status": "timed_out"
           }
         ],
         "borderColor": "#2196F3",
@@ -512,61 +582,71 @@
             "x": 0,
             "y": 120.0,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836811"
+            "branch_name": "test-run-1760773836811",
+            "status": "timed_out"
           },
           {
             "x": 1,
             "y": 120.0,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836826"
+            "branch_name": "test-run-1760773836826",
+            "status": "timed_out"
           },
           {
             "x": 2,
             "y": 120.0,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836836"
+            "branch_name": "test-run-1760773836836",
+            "status": "timed_out"
           },
           {
             "x": 3,
             "y": 120.0,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836848"
+            "branch_name": "test-run-1760773836848",
+            "status": "timed_out"
           },
           {
             "x": 4,
             "y": 120.0,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836853"
+            "branch_name": "test-run-1760773836853",
+            "status": "timed_out"
           },
           {
             "x": 5,
             "y": 120.0,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836857"
+            "branch_name": "test-run-1760773836857",
+            "status": "timed_out"
           },
           {
             "x": 6,
             "y": 120.0,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836859"
+            "branch_name": "test-run-1760773836859",
+            "status": "timed_out"
           },
           {
             "x": 7,
             "y": 120.0,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836861"
+            "branch_name": "test-run-1760773836861",
+            "status": "timed_out"
           },
           {
             "x": 8,
             "y": 120.0,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836863"
+            "branch_name": "test-run-1760773836863",
+            "status": "timed_out"
           },
           {
             "x": 9,
             "y": 120.0,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836865"
+            "branch_name": "test-run-1760773836865",
+            "status": "timed_out"
           }
         ],
         "borderColor": "#607D8B",
@@ -583,61 +663,71 @@
             "x": 0,
             "y": 120.0,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836810"
+            "branch_name": "test-run-1760773836810",
+            "status": "timed_out"
           },
           {
             "x": 1,
             "y": 17.283333333333335,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836824"
+            "branch_name": "test-run-1760773836824",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 6.666666666666667,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836827"
+            "branch_name": "test-run-1760773836827",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 4.966666666666667,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836828"
+            "branch_name": "test-run-1760773836828",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 4.916666666666667,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836829"
+            "branch_name": "test-run-1760773836829",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 10.95,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836830"
+            "branch_name": "test-run-1760773836830",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 17.166666666666668,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836831"
+            "branch_name": "test-run-1760773836831",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 120.0,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836833"
+            "branch_name": "test-run-1760773836833",
+            "status": "timed_out"
           },
           {
             "x": 8,
             "y": 120.0,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836846"
+            "branch_name": "test-run-1760773836846",
+            "status": "timed_out"
           },
           {
             "x": 9,
             "y": 114.5,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836851"
+            "branch_name": "test-run-1760773836851",
+            "status": "success"
           }
         ],
         "borderColor": "#607D8B",
@@ -654,61 +744,71 @@
             "x": 0,
             "y": 120.0,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836809"
+            "branch_name": "test-run-1760773836809",
+            "status": "timed_out"
           },
           {
             "x": 1,
             "y": 120.0,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836823"
+            "branch_name": "test-run-1760773836823",
+            "status": "timed_out"
           },
           {
             "x": 2,
             "y": 3.8333333333333335,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836835"
+            "branch_name": "test-run-1760773836835",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 8.2,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836838"
+            "branch_name": "test-run-1760773836838",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 3.6666666666666665,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836839"
+            "branch_name": "test-run-1760773836839",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 3.5,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836840"
+            "branch_name": "test-run-1760773836840",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 3.3833333333333333,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836841"
+            "branch_name": "test-run-1760773836841",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 3.4,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836842"
+            "branch_name": "test-run-1760773836842",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 3.4,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836843"
+            "branch_name": "test-run-1760773836843",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 3.4,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836844"
+            "branch_name": "test-run-1760773836844",
+            "status": "success"
           }
         ],
         "borderColor": "#9C27B0",
@@ -725,61 +825,71 @@
             "x": 0,
             "y": 30.366666666666667,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836806"
+            "branch_name": "test-run-1760773836806",
+            "status": "timed_out"
           },
           {
             "x": 1,
             "y": 42.61666666666667,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836812"
+            "branch_name": "test-run-1760773836812",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 7.683333333333334,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836814"
+            "branch_name": "test-run-1760773836814",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 2.8,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836815"
+            "branch_name": "test-run-1760773836815",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 0.38333333333333336,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836816"
+            "branch_name": "test-run-1760773836816",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 4.6,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836817"
+            "branch_name": "test-run-1760773836817",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 2.9,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836818"
+            "branch_name": "test-run-1760773836818",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 0.36666666666666664,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836819"
+            "branch_name": "test-run-1760773836819",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 2.466666666666667,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836820"
+            "branch_name": "test-run-1760773836820",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 2.566666666666667,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836821"
+            "branch_name": "test-run-1760773836821",
+            "status": "success"
           }
         ],
         "borderColor": "#4CAF50",
@@ -796,61 +906,71 @@
             "x": 0,
             "y": 58.833333333333336,
             "commit_hash": "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4",
-            "branch_name": "test-run-1760773836807"
+            "branch_name": "test-run-1760773836807",
+            "status": "failure"
           },
           {
             "x": 1,
             "y": 59.516666666666666,
             "commit_hash": "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1",
-            "branch_name": "test-run-1760773836813"
+            "branch_name": "test-run-1760773836813",
+            "status": "failure"
           },
           {
             "x": 2,
             "y": 59.38333333333333,
             "commit_hash": "e65bd1c80b451aa05826590dd9fe69e991cda841",
-            "branch_name": "test-run-1760773836825"
+            "branch_name": "test-run-1760773836825",
+            "status": "failure"
           },
           {
             "x": 3,
             "y": 60.666666666666664,
             "commit_hash": "cc1868e795634982a4fc0ce9ee4e0b30a82027f7",
-            "branch_name": "test-run-1760773836832"
+            "branch_name": "test-run-1760773836832",
+            "status": "failure"
           },
           {
             "x": 4,
             "y": 59.18333333333333,
             "commit_hash": "b899481b65685d42d2683f758e3d59821e5a9e1f",
-            "branch_name": "test-run-1760773836837"
+            "branch_name": "test-run-1760773836837",
+            "status": "failure"
           },
           {
             "x": 5,
             "y": 58.53333333333333,
             "commit_hash": "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a",
-            "branch_name": "test-run-1760773836845"
+            "branch_name": "test-run-1760773836845",
+            "status": "failure"
           },
           {
             "x": 6,
             "y": 58.083333333333336,
             "commit_hash": "4676495b78facabded36caf930ff521fdbd727ff",
-            "branch_name": "test-run-1760773836849"
+            "branch_name": "test-run-1760773836849",
+            "status": "failure"
           },
           {
             "x": 7,
             "y": 60.516666666666666,
             "commit_hash": "cda75168267ed80875862cbc671306910e62e0b9",
-            "branch_name": "test-run-1760773836850"
+            "branch_name": "test-run-1760773836850",
+            "status": "failure"
           },
           {
             "x": 8,
             "y": 58.53333333333333,
             "commit_hash": "b314059cbb329a9896b14c438b5c8ede5f2880b8",
-            "branch_name": "test-run-1760773836854"
+            "branch_name": "test-run-1760773836854",
+            "status": "failure"
           },
           {
             "x": 9,
             "y": 59.5,
             "commit_hash": "00f14cc2bd65b3192af0cd2b6eefb022d5a91192",
-            "branch_name": "test-run-1760773836855"
+            "branch_name": "test-run-1760773836855",
+            "status": "failure"
           }
         ],
         "borderColor": "#FF9800",
@@ -869,61 +989,71 @@
             "x": 0,
             "y": 15.333333333333334,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760691649576"
+            "branch_name": "test-run-1760691649576",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 16.016666666666666,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760691649582"
+            "branch_name": "test-run-1760691649582",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 15.8,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760691649588"
+            "branch_name": "test-run-1760691649588",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 15.4,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760691649594"
+            "branch_name": "test-run-1760691649594",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 15.283333333333333,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760691649598"
+            "branch_name": "test-run-1760691649598",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 14.716666666666667,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760691649604"
+            "branch_name": "test-run-1760691649604",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 15.433333333333334,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760691649606"
+            "branch_name": "test-run-1760691649606",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 14.866666666666667,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760691649609"
+            "branch_name": "test-run-1760691649609",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 15.6,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760691649611"
+            "branch_name": "test-run-1760691649611",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 15.983333333333333,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760691649613"
+            "branch_name": "test-run-1760691649613",
+            "status": "success"
           }
         ],
         "borderColor": "#2196F3",
@@ -940,61 +1070,71 @@
             "x": 0,
             "y": 16.466666666666665,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760707460176"
+            "branch_name": "test-run-1760707460176",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 16.133333333333333,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760707460180"
+            "branch_name": "test-run-1760707460180",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 25.933333333333334,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760707460184"
+            "branch_name": "test-run-1760707460184",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 20.066666666666666,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760707460185"
+            "branch_name": "test-run-1760707460185",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 17.366666666666667,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760707460186"
+            "branch_name": "test-run-1760707460186",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 21.333333333333332,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760707460187"
+            "branch_name": "test-run-1760707460187",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 22.9,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760707460188"
+            "branch_name": "test-run-1760707460188",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 18.333333333333332,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760707460189"
+            "branch_name": "test-run-1760707460189",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 18.216666666666665,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760707460190"
+            "branch_name": "test-run-1760707460190",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 19.566666666666666,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760707460191"
+            "branch_name": "test-run-1760707460191",
+            "status": "success"
           }
         ],
         "borderColor": "#607D8B",
@@ -1011,61 +1151,71 @@
             "x": 0,
             "y": 6.8,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760691649578"
+            "branch_name": "test-run-1760691649578",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 7.2,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760691649580"
+            "branch_name": "test-run-1760691649580",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 4.883333333333334,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760691649583"
+            "branch_name": "test-run-1760691649583",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 5.716666666666667,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760691649585"
+            "branch_name": "test-run-1760691649585",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 6.366666666666666,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760691649587"
+            "branch_name": "test-run-1760691649587",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 6.7,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760691649590"
+            "branch_name": "test-run-1760691649590",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 7.766666666666667,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760691649593"
+            "branch_name": "test-run-1760691649593",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 7.4,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760691649595"
+            "branch_name": "test-run-1760691649595",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 7.35,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760691649599"
+            "branch_name": "test-run-1760691649599",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 10.85,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760691649601"
+            "branch_name": "test-run-1760691649601",
+            "status": "success"
           }
         ],
         "borderColor": "#607D8B",
@@ -1082,61 +1232,71 @@
             "x": 0,
             "y": 14.983333333333333,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760691649577"
+            "branch_name": "test-run-1760691649577",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 9.6,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760691649581"
+            "branch_name": "test-run-1760691649581",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 9.466666666666667,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760691649586"
+            "branch_name": "test-run-1760691649586",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 9.633333333333333,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760691649589"
+            "branch_name": "test-run-1760691649589",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 9.883333333333333,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760691649592"
+            "branch_name": "test-run-1760691649592",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 9.383333333333333,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760691649596"
+            "branch_name": "test-run-1760691649596",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 8.866666666666667,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760691649600"
+            "branch_name": "test-run-1760691649600",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 8.65,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760691649602"
+            "branch_name": "test-run-1760691649602",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 8.883333333333333,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760691649605"
+            "branch_name": "test-run-1760691649605",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 9.683333333333334,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760691649607"
+            "branch_name": "test-run-1760691649607",
+            "status": "success"
           }
         ],
         "borderColor": "#9C27B0",
@@ -1153,61 +1313,71 @@
             "x": 0,
             "y": 6.483333333333333,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760631024087"
+            "branch_name": "test-run-1760631024087",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 4.683333333333334,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760631024092"
+            "branch_name": "test-run-1760631024092",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 4.383333333333334,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760631024095"
+            "branch_name": "test-run-1760631024095",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 4.216666666666667,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760631024099"
+            "branch_name": "test-run-1760631024099",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 4.316666666666666,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760707460177"
+            "branch_name": "test-run-1760707460177",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 3.8,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760707460178"
+            "branch_name": "test-run-1760707460178",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 4.033333333333333,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760707460179"
+            "branch_name": "test-run-1760707460179",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 3.95,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760707460181"
+            "branch_name": "test-run-1760707460181",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 3.75,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760707460182"
+            "branch_name": "test-run-1760707460182",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 9.483333333333333,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760707460183"
+            "branch_name": "test-run-1760707460183",
+            "status": "success"
           }
         ],
         "borderColor": "#4CAF50",
@@ -1224,61 +1394,71 @@
             "x": 0,
             "y": 19.916666666666668,
             "commit_hash": "10c6a100c6e93b0dc175bf2f8b5a1afd66aebe2a",
-            "branch_name": "test-run-1760691649579"
+            "branch_name": "test-run-1760691649579",
+            "status": "success"
           },
           {
             "x": 1,
             "y": 20.783333333333335,
             "commit_hash": "01388b8862e093e72db53de3fe506f68b41e1f09",
-            "branch_name": "test-run-1760691649584"
+            "branch_name": "test-run-1760691649584",
+            "status": "success"
           },
           {
             "x": 2,
             "y": 19.083333333333332,
             "commit_hash": "50e4385aefdd1cea80a3a50af62d5eefcb42b4e8",
-            "branch_name": "test-run-1760691649591"
+            "branch_name": "test-run-1760691649591",
+            "status": "success"
           },
           {
             "x": 3,
             "y": 18.983333333333334,
             "commit_hash": "6e07bcc04dd5a0bb5ae04677823a5b3821f622c5",
-            "branch_name": "test-run-1760691649597"
+            "branch_name": "test-run-1760691649597",
+            "status": "success"
           },
           {
             "x": 4,
             "y": 19.766666666666666,
             "commit_hash": "88ef6afc4fc28599e5d9152d4b97596f8172d0dd",
-            "branch_name": "test-run-1760691649603"
+            "branch_name": "test-run-1760691649603",
+            "status": "success"
           },
           {
             "x": 5,
             "y": 18.316666666666666,
             "commit_hash": "0ada51039abc4639a1e7da1a09d60dd3c23f79a6",
-            "branch_name": "test-run-1760691649608"
+            "branch_name": "test-run-1760691649608",
+            "status": "success"
           },
           {
             "x": 6,
             "y": 19.283333333333335,
             "commit_hash": "282345c4b80716ac3d98baf114b153969738b1da",
-            "branch_name": "test-run-1760691649610"
+            "branch_name": "test-run-1760691649610",
+            "status": "success"
           },
           {
             "x": 7,
             "y": 19.166666666666668,
             "commit_hash": "c664b847bd1218aafca4c58686e70ae01d8dd50b",
-            "branch_name": "test-run-1760691649612"
+            "branch_name": "test-run-1760691649612",
+            "status": "success"
           },
           {
             "x": 8,
             "y": 19.783333333333335,
             "commit_hash": "4547133b95dbae0084db4f651bc08956710f1309",
-            "branch_name": "test-run-1760691649614"
+            "branch_name": "test-run-1760691649614",
+            "status": "success"
           },
           {
             "x": 9,
             "y": 19.183333333333334,
             "commit_hash": "f6f8634eb07f35f02bd2881666925a90513f6f3b",
-            "branch_name": "test-run-1760691649615"
+            "branch_name": "test-run-1760691649615",
+            "status": "success"
           }
         ],
         "borderColor": "#FF9800",
@@ -1295,127 +1475,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 15.333333333333334
+          "time_minutes": 15.333333333333334,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 16.016666666666666
+          "time_minutes": 16.016666666666666,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 15.8
+          "time_minutes": 15.8,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 15.4
+          "time_minutes": 15.4,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 15.283333333333333
+          "time_minutes": 15.283333333333333,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 14.716666666666667
+          "time_minutes": 14.716666666666667,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 15.433333333333334
+          "time_minutes": 15.433333333333334,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 14.866666666666667
+          "time_minutes": 14.866666666666667,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 15.6
+          "time_minutes": 15.6,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 15.983333333333333
+          "time_minutes": 15.983333333333333,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 31.5
+          "time_minutes": 31.5,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 31.016666666666666
+          "time_minutes": 31.016666666666666,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 31.083333333333332
+          "time_minutes": 31.083333333333332,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 30.633333333333333
+          "time_minutes": 30.633333333333333,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 30.4
+          "time_minutes": 30.4,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 31.016666666666666
+          "time_minutes": 31.016666666666666,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 30.816666666666666
+          "time_minutes": 30.816666666666666,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 31.4
+          "time_minutes": 31.4,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 31.833333333333332
+          "time_minutes": 31.833333333333332,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 30.933333333333334
+          "time_minutes": 30.933333333333334,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 1,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 2,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 3,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 4,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 5,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 6,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 7,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 8,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 9,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         }
       ]
     },
@@ -1423,127 +1633,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 16.466666666666665
+          "time_minutes": 16.466666666666665,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 16.133333333333333
+          "time_minutes": 16.133333333333333,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 25.933333333333334
+          "time_minutes": 25.933333333333334,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 20.066666666666666
+          "time_minutes": 20.066666666666666,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 17.366666666666667
+          "time_minutes": 17.366666666666667,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 21.333333333333332
+          "time_minutes": 21.333333333333332,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 22.9
+          "time_minutes": 22.9,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 18.333333333333332
+          "time_minutes": 18.333333333333332,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 18.216666666666665
+          "time_minutes": 18.216666666666665,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 19.566666666666666
+          "time_minutes": 19.566666666666666,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 52.03333333333333
+          "time_minutes": 52.03333333333333,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 35.8
+          "time_minutes": 35.8,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 46.6
+          "time_minutes": 46.6,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 42.45
+          "time_minutes": 42.45,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 39.983333333333334
+          "time_minutes": 39.983333333333334,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 50.61666666666667
+          "time_minutes": 50.61666666666667,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 50.0
+          "time_minutes": 50.0,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 39.25
+          "time_minutes": 39.25,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 40.5
+          "time_minutes": 40.5,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 38.95
+          "time_minutes": 38.95,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 1,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 2,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 3,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 4,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 5,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 6,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 7,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 8,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 9,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         }
       ]
     },
@@ -1551,127 +1791,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 6.8
+          "time_minutes": 6.8,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 7.2
+          "time_minutes": 7.2,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 4.883333333333334
+          "time_minutes": 4.883333333333334,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 5.716666666666667
+          "time_minutes": 5.716666666666667,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 6.366666666666666
+          "time_minutes": 6.366666666666666,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 6.7
+          "time_minutes": 6.7,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 7.766666666666667
+          "time_minutes": 7.766666666666667,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 7.4
+          "time_minutes": 7.4,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 7.35
+          "time_minutes": 7.35,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 10.85
+          "time_minutes": 10.85,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 47.8
+          "time_minutes": 47.8,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 16.883333333333333
+          "time_minutes": 16.883333333333333,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 12.883333333333333
+          "time_minutes": 12.883333333333333,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 16.233333333333334
+          "time_minutes": 16.233333333333334,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 20.966666666666665
+          "time_minutes": 20.966666666666665,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 12.866666666666667
+          "time_minutes": 12.866666666666667,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 10.283333333333333
+          "time_minutes": 10.283333333333333,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 17.433333333333334
+          "time_minutes": 17.433333333333334,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 13.6
+          "time_minutes": 13.6,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 12.416666666666666
+          "time_minutes": 12.416666666666666,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 1,
-          "time_minutes": 17.283333333333335
+          "time_minutes": 17.283333333333335,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 6.666666666666667
+          "time_minutes": 6.666666666666667,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 4.966666666666667
+          "time_minutes": 4.966666666666667,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 4.916666666666667
+          "time_minutes": 4.916666666666667,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 10.95
+          "time_minutes": 10.95,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 17.166666666666668
+          "time_minutes": 17.166666666666668,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 8,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 9,
-          "time_minutes": 114.5
+          "time_minutes": 114.5,
+          "status": "success"
         }
       ]
     },
@@ -1679,127 +1949,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 14.983333333333333
+          "time_minutes": 14.983333333333333,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 9.6
+          "time_minutes": 9.6,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 9.466666666666667
+          "time_minutes": 9.466666666666667,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 9.633333333333333
+          "time_minutes": 9.633333333333333,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 9.883333333333333
+          "time_minutes": 9.883333333333333,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 9.383333333333333
+          "time_minutes": 9.383333333333333,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 8.866666666666667
+          "time_minutes": 8.866666666666667,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 8.65
+          "time_minutes": 8.65,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 8.883333333333333
+          "time_minutes": 8.883333333333333,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 9.683333333333334
+          "time_minutes": 9.683333333333334,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 34.13333333333333
+          "time_minutes": 34.13333333333333,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 17.933333333333334
+          "time_minutes": 17.933333333333334,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 17.483333333333334
+          "time_minutes": 17.483333333333334,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 17.566666666666666
+          "time_minutes": 17.566666666666666,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 17.8
+          "time_minutes": 17.8,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 19.5
+          "time_minutes": 19.5,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 7.516666666666667
+          "time_minutes": 7.516666666666667,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 17.55
+          "time_minutes": 17.55,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 17.216666666666665
+          "time_minutes": 17.216666666666665,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 15.916666666666666
+          "time_minutes": 15.916666666666666,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 1,
-          "time_minutes": 120.0
+          "time_minutes": 120.0,
+          "status": "timed_out"
         },
         {
           "commit_index": 2,
-          "time_minutes": 3.8333333333333335
+          "time_minutes": 3.8333333333333335,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 8.2
+          "time_minutes": 8.2,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 3.6666666666666665
+          "time_minutes": 3.6666666666666665,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 3.5
+          "time_minutes": 3.5,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 3.3833333333333333
+          "time_minutes": 3.3833333333333333,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 3.4
+          "time_minutes": 3.4,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 3.4
+          "time_minutes": 3.4,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 3.4
+          "time_minutes": 3.4,
+          "status": "success"
         }
       ]
     },
@@ -1807,127 +2107,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 6.483333333333333
+          "time_minutes": 6.483333333333333,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 4.683333333333334
+          "time_minutes": 4.683333333333334,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 4.383333333333334
+          "time_minutes": 4.383333333333334,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 4.216666666666667
+          "time_minutes": 4.216666666666667,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 4.316666666666666
+          "time_minutes": 4.316666666666666,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 3.8
+          "time_minutes": 3.8,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 4.033333333333333
+          "time_minutes": 4.033333333333333,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 3.95
+          "time_minutes": 3.95,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 3.75
+          "time_minutes": 3.75,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 9.483333333333333
+          "time_minutes": 9.483333333333333,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 20.266666666666666
+          "time_minutes": 20.266666666666666,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 11.733333333333333
+          "time_minutes": 11.733333333333333,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 15.883333333333333
+          "time_minutes": 15.883333333333333,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 11.383333333333333
+          "time_minutes": 11.383333333333333,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 10.616666666666667
+          "time_minutes": 10.616666666666667,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 9.7
+          "time_minutes": 9.7,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 1.7
+          "time_minutes": 1.7,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 13.216666666666667
+          "time_minutes": 13.216666666666667,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 11.25
+          "time_minutes": 11.25,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 14.783333333333333
+          "time_minutes": 14.783333333333333,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 30.366666666666667
+          "time_minutes": 30.366666666666667,
+          "status": "timed_out"
         },
         {
           "commit_index": 1,
-          "time_minutes": 42.61666666666667
+          "time_minutes": 42.61666666666667,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 7.683333333333334
+          "time_minutes": 7.683333333333334,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 2.8
+          "time_minutes": 2.8,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 0.38333333333333336
+          "time_minutes": 0.38333333333333336,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 4.6
+          "time_minutes": 4.6,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 2.9
+          "time_minutes": 2.9,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 0.36666666666666664
+          "time_minutes": 0.36666666666666664,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 2.466666666666667
+          "time_minutes": 2.466666666666667,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 2.566666666666667
+          "time_minutes": 2.566666666666667,
+          "status": "success"
         }
       ]
     },
@@ -1935,127 +2265,157 @@
       "helix-editor/helix": [
         {
           "commit_index": 0,
-          "time_minutes": 19.916666666666668
+          "time_minutes": 19.916666666666668,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 20.783333333333335
+          "time_minutes": 20.783333333333335,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 19.083333333333332
+          "time_minutes": 19.083333333333332,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 18.983333333333334
+          "time_minutes": 18.983333333333334,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 19.766666666666666
+          "time_minutes": 19.766666666666666,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 18.316666666666666
+          "time_minutes": 18.316666666666666,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 19.283333333333335
+          "time_minutes": 19.283333333333335,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 19.166666666666668
+          "time_minutes": 19.166666666666668,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 19.783333333333335
+          "time_minutes": 19.783333333333335,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 19.183333333333334
+          "time_minutes": 19.183333333333334,
+          "status": "success"
         }
       ],
       "agda/agda": [
         {
           "commit_index": 0,
-          "time_minutes": 50.25
+          "time_minutes": 50.25,
+          "status": "success"
         },
         {
           "commit_index": 1,
-          "time_minutes": 53.31666666666667
+          "time_minutes": 53.31666666666667,
+          "status": "success"
         },
         {
           "commit_index": 2,
-          "time_minutes": 50.516666666666666
+          "time_minutes": 50.516666666666666,
+          "status": "success"
         },
         {
           "commit_index": 3,
-          "time_minutes": 50.68333333333333
+          "time_minutes": 50.68333333333333,
+          "status": "success"
         },
         {
           "commit_index": 4,
-          "time_minutes": 49.78333333333333
+          "time_minutes": 49.78333333333333,
+          "status": "success"
         },
         {
           "commit_index": 5,
-          "time_minutes": 50.0
+          "time_minutes": 50.0,
+          "status": "success"
         },
         {
           "commit_index": 6,
-          "time_minutes": 49.95
+          "time_minutes": 49.95,
+          "status": "success"
         },
         {
           "commit_index": 7,
-          "time_minutes": 49.7
+          "time_minutes": 49.7,
+          "status": "success"
         },
         {
           "commit_index": 8,
-          "time_minutes": 49.78333333333333
+          "time_minutes": 49.78333333333333,
+          "status": "success"
         },
         {
           "commit_index": 9,
-          "time_minutes": 50.55
+          "time_minutes": 50.55,
+          "status": "success"
         }
       ],
       "crytic/echidna": [
         {
           "commit_index": 0,
-          "time_minutes": 58.833333333333336
+          "time_minutes": 58.833333333333336,
+          "status": "failure"
         },
         {
           "commit_index": 1,
-          "time_minutes": 59.516666666666666
+          "time_minutes": 59.516666666666666,
+          "status": "failure"
         },
         {
           "commit_index": 2,
-          "time_minutes": 59.38333333333333
+          "time_minutes": 59.38333333333333,
+          "status": "failure"
         },
         {
           "commit_index": 3,
-          "time_minutes": 60.666666666666664
+          "time_minutes": 60.666666666666664,
+          "status": "failure"
         },
         {
           "commit_index": 4,
-          "time_minutes": 59.18333333333333
+          "time_minutes": 59.18333333333333,
+          "status": "failure"
         },
         {
           "commit_index": 5,
-          "time_minutes": 58.53333333333333
+          "time_minutes": 58.53333333333333,
+          "status": "failure"
         },
         {
           "commit_index": 6,
-          "time_minutes": 58.083333333333336
+          "time_minutes": 58.083333333333336,
+          "status": "failure"
         },
         {
           "commit_index": 7,
-          "time_minutes": 60.516666666666666
+          "time_minutes": 60.516666666666666,
+          "status": "failure"
         },
         {
           "commit_index": 8,
-          "time_minutes": 58.53333333333333
+          "time_minutes": 58.53333333333333,
+          "status": "failure"
         },
         {
           "commit_index": 9,
-          "time_minutes": 59.5
+          "time_minutes": 59.5,
+          "status": "failure"
         }
       ]
     }

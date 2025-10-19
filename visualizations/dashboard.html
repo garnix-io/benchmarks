@@ -156,6 +156,11 @@
                     <span class="checkmark"></span>
                     Include other commits
                 </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeFailedBuilds" onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include failed builds
+                </label>
             </div>
 
             <!-- Chart Container -->
@@ -192,6 +197,12 @@
                         <input type="checkbox" id="includeFirstCommitSummary" onchange="updateSummaryFirstCommitFilter()">
                         <span class="checkmark"></span>
                         Include first commit data
+                    </label>
+                    
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="includeFailedBuildsSummary" onchange="updateSummaryFailedBuildsFilter()">
+                        <span class="checkmark"></span>
+                        Include failed builds
                     </label>
                 </div>
 

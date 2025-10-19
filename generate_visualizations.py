@@ -2,13 +2,37 @@
 import json
 import os
 import glob
+import yaml
 from collections import defaultdict
 from pathlib import Path
+
+def load_genuine_failures():
+    """Load the list of builds that should be treated as genuine failures from incorrect.yaml"""
+    failures_path = Path("incorrect.yaml")
+    genuine_failures = set()
+    
+    if failures_path.exists():
+        try:
+            with open(failures_path, 'r') as f:
+                data = yaml.safe_load(f)
+            
+            for entry in data.get('genuine_failures', []):
+                repo = entry['repo']
+                platform = entry['platform']
+                for commit_hash in entry['commits']:
+                    genuine_failures.add((repo, platform, commit_hash))
+        except Exception as e:
+            print(f"Warning: Could not load incorrect.yaml: {e}")
+    
+    return genuine_failures
 
 def parse_data():
     """Parse all JSON files and organize by repo and platform"""
     data_dir = Path("data")
     results = defaultdict(lambda: defaultdict(list))
+    
+    # Load genuine failures
+    genuine_failures = load_genuine_failures()
     
     for org_dir in data_dir.iterdir():
         if not org_dir.is_dir():
@@ -43,11 +67,28 @@ def parse_data():
                         # Convert time from ms to minutes for better readability
                         time_minutes = data.get('time', 0) / (1000 * 60)
                         
+                        # Ignore original status entirely - default everything to success
+                        original_status = data.get('status', 'unknown')
+                        
+                        # Default all builds to success, only mark as failed if explicitly listed in YAML
+                        if (repo_key, platform_name, commit_hash) in genuine_failures:
+                            corrected_status = 'failure'
+                            print(f"Marked as genuine failure: {repo_key}/{platform_name}/{commit_hash[:8]}")
+                        elif original_status == 'timed_out':
+                            # Keep timed_out status as is (separate from success/failure)
+                            corrected_status = 'timed_out'
+                        else:
+                            # Everything else becomes successful (ignore original JSON status)
+                            corrected_status = 'success'
+                            if original_status == 'failure':
+                                print(f"Overrode to success: {repo_key}/{platform_name}/{commit_hash[:8]} (was originally failed)")
+                        
                         results[repo_key][platform_name].append({
                             'commit_index': commit_index,
                             'commit_hash': commit_hash,
                             'time_minutes': time_minutes,
-                            'branch_name': data.get('branchName', 'main')
+                            'branch_name': data.get('branchName', 'main'),
+                            'status': corrected_status
                         })
                         
                     except (json.JSONDecodeError, ValueError) as e:
@@ -110,7 +151,8 @@ def generate_summary_data(all_data):
                 for commit in commits:
                     summary_detailed_data[platform][repo_name].append({
                         'commit_index': commit['commit_index'],
-                        'time_minutes': commit['time_minutes']
+                        'time_minutes': commit['time_minutes'],
+                        'status': commit['status']
                     })
     
     # Convert to regular dict for JSON serialization
@@ -139,7 +181,8 @@ def generate_dashboard_data(all_data):
                 'label': platform,
                 'data': [{'x': commit['commit_index'], 'y': commit['time_minutes'], 
                          'commit_hash': commit['commit_hash'], 
-                         'branch_name': commit['branch_name']} for commit in commits],
+                         'branch_name': commit['branch_name'],
+                         'status': commit['status']} for commit in commits],
                 'borderColor': get_platform_color(platform),
                 'backgroundColor': get_platform_color(platform) + '20',
                 'fill': False,
