@@ -1,7 +1,9 @@
 // Global variables
 let repoNames = [];
 let allDatasets = [];
+let summaryData = [];
 let chart = null;
+let summaryChart = null;
 let currentTab = 0;
 let allPlatforms = [];
 let platformColors = {};
@@ -53,6 +55,7 @@ async function loadData() {
         // Process the data structure
         repoNames = data.repo_names;
         allDatasets = data.datasets;
+        summaryData = data.summary || [];
         
         // Extract all unique platforms from the datasets
         const platformSet = new Set();
@@ -83,7 +86,82 @@ async function loadData() {
     }
 }
 
+function createSummaryChart() {
+    if (summaryChart) {
+        summaryChart.destroy();
+    }
+    
+    if (summaryData.length === 0) {
+        return;
+    }
+    
+    const summaryCtx = document.getElementById('summaryChart').getContext('2d');
+    
+    summaryChart = new Chart(summaryCtx, {
+        type: 'bar',
+        data: {
+            labels: summaryData.map(d => getPlatformDisplayName(d.platform)),
+            datasets: [{
+                label: 'Slowdown Factor vs Fastest CI',
+                data: summaryData.map(d => d.slowdown_factor),
+                backgroundColor: summaryData.map(d => getPlatformColor(d.platform)),
+                borderColor: summaryData.map(d => getPlatformColor(d.platform)),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'CI Performance Summary: Relative Speed Comparison (Equal Repository Weighting)',
+                    font: { size: 16 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const data = summaryData[context.dataIndex];
+                            return [
+                                `Slowdown factor: ${data.slowdown_factor.toFixed(2)}x slower`,
+                                `Average time: ${data.average_time.toFixed(1)} minutes`,
+                                `Repositories tested: ${data.repo_count}`
+                            ];
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Slowdown Factor (vs Fastest CI)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(1) + 'x';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'CI Platform'
+                    }
+                }
+            }
+        }
+    });
+}
+
 function initializeDashboard() {
+    // Create summary chart first
+    createSummaryChart();
+    
     // Create tab buttons
     const tabsContainer = document.getElementById('tabs');
     tabsContainer.innerHTML = '';

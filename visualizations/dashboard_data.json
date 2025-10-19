@@ -1289,5 +1289,43 @@
         "pointHoverRadius": 6
       }
     ]
+  ],
+  "summary": [
+    {
+      "platform": "garnix",
+      "average_time": 8.879444444444443,
+      "slowdown_factor": 1.0,
+      "repo_count": 3
+    },
+    {
+      "platform": "github-actions-cachix-parallel",
+      "average_time": 18.481111111111108,
+      "slowdown_factor": 2.081336419946193,
+      "repo_count": 3
+    },
+    {
+      "platform": "nixbuild-net",
+      "average_time": 26.294999999999998,
+      "slowdown_factor": 2.9613339172871176,
+      "repo_count": 3
+    },
+    {
+      "platform": "github-actions-serial",
+      "average_time": 43.05166666666667,
+      "slowdown_factor": 4.8484639929925555,
+      "repo_count": 3
+    },
+    {
+      "platform": "github-actions-parallel",
+      "average_time": 55.50222222222222,
+      "slowdown_factor": 6.250641306388038,
+      "repo_count": 3
+    },
+    {
+      "platform": "github-actions-magic-nix-cache-parallel",
+      "average_time": 61.083333333333336,
+      "slowdown_factor": 6.879184133141464,
+      "repo_count": 3
+    }
   ]
 }
