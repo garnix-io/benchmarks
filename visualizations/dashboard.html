@@ -12,7 +12,7 @@
         <h1>Nix CI Benchmarks</h1>
         <div class="subtitle">Benchmarks for Nix CI build times across different CI platforms</div>
 
-    <p>We picked some well-known open source projects that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
+    <p>We picked some open source projects with lots of starts that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
 
     <p>We ran the following setups:</p>
 
@@ -51,101 +51,10 @@
         </p>
     </aside>
 
-    <h1>The results</h1>
-        <div id="dashboard" style="display: none;">
-            <!-- Summary Chart -->
-            <div class="summary-section">
-                <h2>Performance Summary: Relative Slowdown Comparison</h2>
+    <p>It's useful to understand the methodology of these benchmarks to
+    interpret them correctly. For the impatient, however, you can
+    <a href="#results">skip to the results</a>.
 
-                <!-- Repository Filter Controls -->
-                <div class="repo-filters">
-                    <label>Include repositories:</label>
-                    <div id="repoCheckboxes">
-                        <!-- Repository checkboxes will be populated by JavaScript -->
-                    </div>
-                    
-                    <label class="filter-checkbox">
-                        <input type="checkbox" id="includeFirstCommitSummary" onchange="updateSummaryFirstCommitFilter()">
-                        <span class="checkmark"></span>
-                        Include first commit data
-                    </label>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="summaryChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Tab Navigation -->
-            <div class="tabs" id="tabs">
-                <!-- Tabs will be populated by JavaScript -->
-            </div>
-
-            <!-- Filter Controls -->
-            <div class="filters">
-                <label class="filter-checkbox">
-                    <input type="checkbox" id="includeFirst" onchange="updateChart()">
-                    <span class="checkmark"></span>
-                    Include first commit
-                </label>
-                <label class="filter-checkbox">
-                    <input type="checkbox" id="includeOthers" checked onchange="updateChart()">
-                    <span class="checkmark"></span>
-                    Include other commits
-                </label>
-            </div>
-
-            <!-- Chart Container -->
-            <div class="chart-container">
-                <canvas id="performanceChart"></canvas>
-            </div>
-
-            <!-- Statistics Container -->
-            <div class="stats" id="stats">
-                <!-- Stats will be populated by JavaScript -->
-            </div>
-
-            <!-- Platform Legend -->
-            <div class="platforms" id="platforms">
-                <!-- Platform legend will be populated by JavaScript -->
-            </div>
-        </div>
-
-    <h1>Cost</h1>
-
-    <p>Besides garnix, all tested CI systems use GitHub Actions. They therefore incur the associated costs in addition to any other costs. For public repos, GitHub Actions is free <strong>if you use a single standard runner</strong>; for private ones it is not, though even a free account gets free minutes.</p>
-
-    <p>Pricing is not, for the most part, fully usage-based:</p>
-    <ul>
-        <li>GitHub plans include some free minutes (amount varies depending on plan)</li>
-        <li>nixbuild.net includes 1,500 free CPU/minutes</li>
-        <li>The garnix free plan includes 1,500 free minutes. The individual plan includes 10,000 minutes.</li>
-        <li>Cachix includes 5GB of free cache for open source projects.</li>
-        <li>garnix also grants <a href="https://garnix.io/docs/open_source">free CI for open source projects</a> that benefit the wider community (all tested repos would qualify).</li>
-    </ul>
-
-    <p>The feature set is also not the same:</p>
-    <ul>
-        <li>Cachix, garnix and nixbuild.net offer a Nix substituter/cache.
-          magic-nix-cache also caches build artifacts, but not in a way that is
-          usable as a substituter without an additional service.</li>
-        <li>All garnix paid plans also include a 2 vCPU, 4 GB RAM server, and 10,000
-          free PR deployment minutes.</li>
-    </ul>
-
-    <p>Because of how billing works, different CIs favor different setups
-    in terms of cost. For example:</p>
-    <ul>
-        <li>GitHub Actions in parallel and garnix work best, price-wise,
-        when different builds are quite independent of one another.</li>
-        <li>Alternatively, for garnix, pricing is better if you combine many
-            packages into one, even though performance is not necessarily
-            very different due to dynamic CPU allocation.</li>
-        <li>GitHub Actions in general, and in parallel even more, works
-        best when each build step fully uses the available CPUs.</li>
-        <li>nixbuild.net is generally very good at billing, by which we mean
-        that there are no ways that are less good </li>
-    </ul>
 
     <h1>Methodology</h1>
 
@@ -200,6 +109,151 @@
         <li>Make sure benchmarks don't affect one another. For example, if you run two different types of CI that write to the same cache (Cachix, garnix, magic-nix-cache, and nixbuild.net), you will get artifically low timings</p>
         <li>Queuing in builds is accounted for differently between garnix and CIs using GitHub Actions. The amount of time spend in a queue is <strong>not</strong> counted in the total time for GitHub Actions, but it <strong>is</strong> for garnix. It's somewhat rare that you will be queued with garnix, but potentially if you run multiple tests in parallel it will happen.</li>
     </ul>
+
+    <h1 id="results">The results</h1>
+
+        <p>We ran the benchmarks for three repos</p>
+
+        <ul>
+            <li><a href="https://github.com/agda/agda">agda</a></li>
+            <li><a href="https://github.com/crytic/echidna">echidna</a></li>
+            <li><a href="https://github.com/helix-editor/helix">helix</a></li>
+        </ul>
+
+        <p>The commits picked were the last ten commits at the time
+        the benchmark started. You can see the individual commit hashes by
+        hovering on a datapoint</p>
+
+        <p>Note that by default we exclude the first commit from any calculations.
+        This is for two reasons</p>
+
+        <ul>
+            <li>For your average project, there will be <i>many more commits</i>
+            than just ten. Letting the first commit contribute so much to
+            the average would therefore be unrepresentative. </li>
+            <li>The first commit is susceptible to various influences: in
+                particular, with any CI that has a cache, to whether related
+                builds were <i>ever</i> added to the cache.
+            </li>
+        </ul>
+
+        <div id="dashboard" style="display: none;">
+
+            <!-- Tab Navigation -->
+            <div class="tabs" id="tabs">
+                <!-- Tabs will be populated by JavaScript -->
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filters">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeFirst" onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include first commit
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeOthers" checked onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include other commits
+                </label>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+
+            <!-- Statistics Container -->
+            <div class="stats" id="stats">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <!-- Platform Legend -->
+            <div class="platforms" id="platforms">
+                <!-- Platform legend will be populated by JavaScript -->
+            </div>
+
+            <!-- Summary Chart -->
+            <div class="summary-section">
+                <p>We can also summarize the average slowdown for each CI,
+                relative to the fastest one. We calculated that by, for each
+                repo, normalizing the average of each CI by the fastest, and
+                then averaging <i>those</i> numbers.
+                </p>
+
+                <!-- Repository Filter Controls -->
+                <div class="repo-filters">
+                    <label>Include repositories:</label>
+                    <div id="repoCheckboxes">
+                        <!-- Repository checkboxes will be populated by JavaScript -->
+                    </div>
+
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="includeFirstCommitSummary" onchange="updateSummaryFirstCommitFilter()">
+                        <span class="checkmark"></span>
+                        Include first commit data
+                    </label>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="summaryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    <h1>Analysis</h1>
+
+    <p>A few facts stand out:</p>
+
+    <ul>
+        <li>magic-nix-cache doesn't seem to help at all with build speeds
+        over having no cache at all (i.e, over github-actions-parallel).
+        This is strange since Cachix, which also only differs in having a cache,
+        speeds up builds considerably.
+        Part of the reason seems to be slow uploads to the cache (example <a
+            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>).
+        T
+        </li>
+        <li>For some projects, <i>evaluation matters a lot</i>.
+        </li>
+    </ul>
+
+    <h1>Cost</h1>
+
+    <p>Besides garnix, all tested CI systems use GitHub Actions. They therefore incur the associated costs in addition to any other costs. For public repos, GitHub Actions is free <strong>if you use a single standard runner</strong>; for private ones it is not, though even a free account gets free minutes.</p>
+
+    <p>Pricing is not, for the most part, fully usage-based:</p>
+    <ul>
+        <li>GitHub plans include some free minutes (amount varies depending on plan)</li>
+        <li>nixbuild.net includes 1,500 free CPU/minutes</li>
+        <li>The garnix free plan includes 1,500 free minutes. The individual plan includes 10,000 minutes.</li>
+        <li>Cachix includes 5GB of free cache for open source projects.</li>
+        <li>garnix also grants <a href="https://garnix.io/docs/open_source">free CI for open source projects</a> that benefit the wider community (all tested repos would qualify).</li>
+    </ul>
+
+    <p>The feature set is also not the same:</p>
+    <ul>
+        <li>Cachix, garnix and nixbuild.net offer a Nix substituter/cache.
+          magic-nix-cache also caches build artifacts, but not in a way that is
+          usable as a substituter without an additional service.</li>
+        <li>All garnix paid plans also include a 2 vCPU, 4 GB RAM server, and 10,000
+          free PR deployment minutes.</li>
+    </ul>
+
+    <p>Because of how billing works, different CIs favor different setups
+    in terms of cost. For example:</p>
+    <ul>
+        <li>GitHub Actions in parallel and garnix work best, price-wise,
+        when different builds are quite independent of one another.</li>
+        <li>Alternatively, for garnix, pricing is better if you combine many
+            packages into one, even though performance is not necessarily
+            very different due to dynamic CPU allocation.</li>
+        <li>GitHub Actions in general, and in parallel even more, works
+        best when each build step fully uses the available CPUs.</li>
+        <li>nixbuild.net is generally very good at billing, by which we mean
+        that there are no ways that are less good </li>
+    </ul>
+
 
     <h1>Future improvements</h1>
 
