@@ -1,8 +1,9 @@
 // Global variables
 let repoNames = [];
 let allDatasets = [];
-let summaryRepoData = {};
+let summaryDetailedData = {};
 let enabledRepos = new Set();
+let includeFirstCommitSummary = false;  // Default to exclude first commit
 let chart = null;
 let summaryChart = null;
 let currentTab = 0;
@@ -56,7 +57,7 @@ async function loadData() {
         // Process the data structure
         repoNames = data.repo_names;
         allDatasets = data.datasets;
-        summaryRepoData = data.summary_repo_data || {};
+        summaryDetailedData = data.summary_detailed_data || {};
 
         // Initialize all repos as enabled
         enabledRepos = new Set(repoNames);
@@ -91,38 +92,69 @@ async function loadData() {
 }
 
 function calculateSummaryData() {
-    if (Object.keys(summaryRepoData).length === 0 || enabledRepos.size === 0) {
+    if (Object.keys(summaryDetailedData).length === 0 || enabledRepos.size === 0) {
         return [];
     }
 
     const enabledReposArray = Array.from(enabledRepos);
     const platformSlowdownFactors = {};
+    
+    console.log("=== Summary Calculation Debug ===");
+    console.log("includeFirstCommitSummary:", includeFirstCommitSummary);
+    console.log("enabledRepos:", Array.from(enabledRepos));
 
     // For each enabled repository, calculate slowdown factors
     for (const repo of enabledReposArray) {
         const repoTimes = {};
+        
+        console.log(`\n--- Repository: ${repo} ---`);
 
-        // Get times for this repo across all platforms
-        for (const [platform, repoData] of Object.entries(summaryRepoData)) {
-            if (repoData[repo] !== undefined) {
-                repoTimes[platform] = repoData[repo];
+        // Get filtered times for this repo across all platforms
+        for (const [platform, repoData] of Object.entries(summaryDetailedData)) {
+            if (repoData[repo]) {
+                // Filter commits based on includeFirstCommitSummary setting
+                const filteredCommits = repoData[repo].filter(commit => {
+                    if (commit.commit_index === 0) {
+                        return includeFirstCommitSummary;
+                    } else {
+                        return true; // Always include non-first commits
+                    }
+                });
+
+                if (filteredCommits.length > 0) {
+                    // Calculate average for this repo/platform combination
+                    const avgTime = filteredCommits.reduce((sum, commit) => sum + commit.time_minutes, 0) / filteredCommits.length;
+                    repoTimes[platform] = avgTime;
+                    console.log(`${platform}: ${avgTime.toFixed(2)} minutes (${filteredCommits.length} commits)`);
+                }
             }
+        }
+
+        // Only proceed if we have data for this repo
+        if (Object.keys(repoTimes).length === 0) {
+            continue;
         }
 
         // Find fastest platform for this repo
         const fastestTimeForRepo = Math.min(...Object.values(repoTimes));
+        const fastestPlatform = Object.entries(repoTimes).find(([p, t]) => t === fastestTimeForRepo)[0];
+        
+        console.log(`Fastest for ${repo}: ${fastestPlatform} (${fastestTimeForRepo.toFixed(2)} minutes)`);
 
         // Calculate slowdown factors for this repo
         for (const [platform, time] of Object.entries(repoTimes)) {
             if (!platformSlowdownFactors[platform]) {
                 platformSlowdownFactors[platform] = [];
             }
-            platformSlowdownFactors[platform].push(time / fastestTimeForRepo);
+            const slowdownFactor = time / fastestTimeForRepo;
+            platformSlowdownFactors[platform].push(slowdownFactor);
+            console.log(`${platform}: ${slowdownFactor.toFixed(3)}x slowdown`);
         }
     }
 
     // Average the slowdown factors across repositories
     const summaryData = [];
+    console.log("\n--- Final Averages ---");
     for (const [platform, slowdownFactors] of Object.entries(platformSlowdownFactors)) {
         if (slowdownFactors.length > 0) {
             const avgSlowdownFactor = slowdownFactors.reduce((a, b) => a + b, 0) / slowdownFactors.length;
@@ -131,6 +163,7 @@ function calculateSummaryData() {
                 slowdown_factor: avgSlowdownFactor,
                 repo_count: slowdownFactors.length
             });
+            console.log(`${platform}: ${avgSlowdownFactor.toFixed(3)}x average slowdown (${slowdownFactors.map(f => f.toFixed(2)).join(', ')})`);
         }
     }
 
@@ -168,7 +201,7 @@ function createSummaryChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: `CI Performance Summary: Relative Slowdown Comparison [lower is better] (${enabledRepos.size}/${repoNames.length} repositories)`,
+                    text: `CI Performance Summary: Relative Slowdown Comparison [lower is better] (${enabledRepos.size}/${repoNames.length} repos${includeFirstCommitSummary ? ', incl. first commits' : ''})`,
                     font: { size: 16 }
                 },
                 tooltip: {
@@ -243,6 +276,11 @@ function updateRepoFilter(repoName, enabled) {
     }
 
     // Recreate summary chart with new filter
+    createSummaryChart();
+}
+
+function updateSummaryFirstCommitFilter() {
+    includeFirstCommitSummary = document.getElementById('includeFirstCommitSummary').checked;
     createSummaryChart();
 }
 

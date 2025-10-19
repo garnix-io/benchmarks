@@ -63,6 +63,12 @@
                     <div id="repoCheckboxes">
                         <!-- Repository checkboxes will be populated by JavaScript -->
                     </div>
+                    
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="includeFirstCommitSummary" onchange="updateSummaryFirstCommitFilter()">
+                        <span class="checkmark"></span>
+                        Include first commit data
+                    </label>
                 </div>
 
                 <div class="chart-container">

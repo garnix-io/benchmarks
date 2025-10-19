@@ -97,21 +97,28 @@ def generate_chart_data(repo_name, repo_data):
     return datasets
 
 def generate_summary_data(all_data):
-    """Calculate summary statistics with equal repository weighting"""
+    """Generate detailed commit data for client-side summary filtering"""
     from collections import defaultdict
     
-    # Store per-repo averages for each platform for client-side filtering
-    platform_repo_data = defaultdict(dict)
+    # Store all commit data for client-side processing
+    summary_detailed_data = defaultdict(lambda: defaultdict(list))
     
-    # Calculate average for each platform within each repo
+    # Store all commit data for each platform and repo
     for repo_name, repo_data in all_data.items():
         for platform, commits in repo_data.items():
             if commits:
-                repo_avg = sum(commit['time_minutes'] for commit in commits) / len(commits)
-                platform_repo_data[platform][repo_name] = repo_avg
+                for commit in commits:
+                    summary_detailed_data[platform][repo_name].append({
+                        'commit_index': commit['commit_index'],
+                        'time_minutes': commit['time_minutes']
+                    })
     
-    # Return the raw per-repo data for client-side processing
-    return dict(platform_repo_data)
+    # Convert to regular dict for JSON serialization
+    result = {}
+    for platform, repo_data in summary_detailed_data.items():
+        result[platform] = dict(repo_data)
+    
+    return result
 
 def generate_dashboard_data(all_data):
     """Generate JSON data structure for the dashboard"""
@@ -145,13 +152,13 @@ def generate_dashboard_data(all_data):
         repo_names.append(repo_name)
         all_datasets.append(datasets)
     
-    # Generate summary data (per-repo platform averages)
-    summary_repo_data = generate_summary_data(all_data)
+    # Generate detailed summary data for client-side filtering
+    summary_detailed_data = generate_summary_data(all_data)
     
     return {
         'repo_names': repo_names,
         'datasets': all_datasets,
-        'summary_repo_data': summary_repo_data
+        'summary_detailed_data': summary_detailed_data
     }
 
 def main():

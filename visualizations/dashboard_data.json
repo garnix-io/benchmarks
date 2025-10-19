@@ -1290,36 +1290,774 @@
       }
     ]
   ],
-  "summary_repo_data": {
+  "summary_detailed_data": {
     "github-actions-parallel": {
-      "helix-editor/helix": 15.443333333333333,
-      "agda/agda": 31.063333333333333,
-      "crytic/echidna": 120.0
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 15.333333333333334
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 16.016666666666666
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 15.8
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 15.4
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 15.283333333333333
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 14.716666666666667
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 15.433333333333334
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 14.866666666666667
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 15.6
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 15.983333333333333
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 31.5
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 31.016666666666666
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 31.083333333333332
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 30.633333333333333
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 30.4
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 31.016666666666666
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 30.816666666666666
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 31.4
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 31.833333333333332
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 30.933333333333334
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 120.0
+        }
+      ]
     },
     "github-actions-magic-nix-cache-parallel": {
-      "helix-editor/helix": 19.631666666666668,
-      "agda/agda": 43.61833333333333,
-      "crytic/echidna": 120.0
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 16.466666666666665
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 16.133333333333333
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 25.933333333333334
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 20.066666666666666
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 17.366666666666667
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 21.333333333333332
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 22.9
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 18.333333333333332
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 18.216666666666665
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 19.566666666666666
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 52.03333333333333
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 35.8
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 46.6
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 42.45
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 39.983333333333334
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 50.61666666666667
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 50.0
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 39.25
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 40.5
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 38.95
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 120.0
+        }
+      ]
     },
     "nixbuild-net": {
-      "helix-editor/helix": 7.1033333333333335,
-      "agda/agda": 18.136666666666663,
-      "crytic/echidna": 53.644999999999996
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 6.8
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 7.2
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 4.883333333333334
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 5.716666666666667
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 6.366666666666666
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 6.7
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 7.766666666666667
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 7.4
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 7.35
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 10.85
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 47.8
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 16.883333333333333
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 12.883333333333333
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 16.233333333333334
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 20.966666666666665
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 12.866666666666667
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 10.283333333333333
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 17.433333333333334
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 13.6
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 12.416666666666666
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 17.283333333333335
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 6.666666666666667
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 4.966666666666667
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 4.916666666666667
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 10.95
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 17.166666666666668
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 114.5
+        }
+      ]
     },
     "github-actions-cachix-parallel": {
-      "helix-editor/helix": 9.903333333333332,
-      "agda/agda": 18.261666666666667,
-      "crytic/echidna": 27.278333333333325
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 14.983333333333333
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 9.6
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 9.466666666666667
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 9.633333333333333
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 9.883333333333333
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 9.383333333333333
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 8.866666666666667
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 8.65
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 8.883333333333333
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 9.683333333333334
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 34.13333333333333
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 17.933333333333334
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 17.483333333333334
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 17.566666666666666
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 17.8
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 19.5
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 7.516666666666667
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 17.55
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 17.216666666666665
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 15.916666666666666
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 120.0
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 3.8333333333333335
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 8.2
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 3.6666666666666665
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 3.5
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 3.3833333333333333
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 3.4
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 3.4
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 3.4
+        }
+      ]
     },
     "garnix": {
-      "helix-editor/helix": 4.91,
-      "agda/agda": 12.053333333333333,
-      "crytic/echidna": 9.675
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 6.483333333333333
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 4.683333333333334
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 4.383333333333334
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 4.216666666666667
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 4.316666666666666
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 3.8
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 4.033333333333333
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 3.95
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 3.75
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 9.483333333333333
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 20.266666666666666
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 11.733333333333333
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 15.883333333333333
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 11.383333333333333
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 10.616666666666667
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 9.7
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 1.7
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 13.216666666666667
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 11.25
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 14.783333333333333
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 30.366666666666667
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 42.61666666666667
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 7.683333333333334
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 2.8
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 0.38333333333333336
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 4.6
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 2.9
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 0.36666666666666664
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 2.466666666666667
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 2.566666666666667
+        }
+      ]
     },
     "github-actions-serial": {
-      "helix-editor/helix": 19.426666666666666,
-      "agda/agda": 50.453333333333326,
-      "crytic/echidna": 59.275
+      "helix-editor/helix": [
+        {
+          "commit_index": 0,
+          "time_minutes": 19.916666666666668
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 20.783333333333335
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 19.083333333333332
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 18.983333333333334
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 19.766666666666666
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 18.316666666666666
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 19.283333333333335
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 19.166666666666668
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 19.783333333333335
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 19.183333333333334
+        }
+      ],
+      "agda/agda": [
+        {
+          "commit_index": 0,
+          "time_minutes": 50.25
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 53.31666666666667
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 50.516666666666666
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 50.68333333333333
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 49.78333333333333
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 50.0
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 49.95
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 49.7
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 49.78333333333333
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 50.55
+        }
+      ],
+      "crytic/echidna": [
+        {
+          "commit_index": 0,
+          "time_minutes": 58.833333333333336
+        },
+        {
+          "commit_index": 1,
+          "time_minutes": 59.516666666666666
+        },
+        {
+          "commit_index": 2,
+          "time_minutes": 59.38333333333333
+        },
+        {
+          "commit_index": 3,
+          "time_minutes": 60.666666666666664
+        },
+        {
+          "commit_index": 4,
+          "time_minutes": 59.18333333333333
+        },
+        {
+          "commit_index": 5,
+          "time_minutes": 58.53333333333333
+        },
+        {
+          "commit_index": 6,
+          "time_minutes": 58.083333333333336
+        },
+        {
+          "commit_index": 7,
+          "time_minutes": 60.516666666666666
+        },
+        {
+          "commit_index": 8,
+          "time_minutes": 58.53333333333333
+        },
+        {
+          "commit_index": 9,
+          "time_minutes": 59.5
+        }
+      ]
     }
   }
 }
