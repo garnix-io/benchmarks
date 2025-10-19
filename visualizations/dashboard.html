@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI Performance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Nix CI Benchmarks</h1>
+        <div class="subtitle">Benchmarks for Nix CI build times across different CI platforms</div>
+
+    <p>We picked some well-known open source projects that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
+
+    <p>We ran the following setups:</p>
+
+    <ul>
+        <li>(1) GitHub Actions, in serial and parallel, without any caching.</li>
+        <li>(2) GitHub Actions in parallel with Cachix for caching.</li>
+        <li>(3) GitHub Actions in parallel with magic-nix-cache for caching.</li>
+        <li>(4) GitHub Actions with nixbuild.net for building (using the CI workflow, with remote store building).</li>
+        <li>(5) garnix (without incremental builds).</li>
+    </ul>
+
+    <p>We picked more popular repos that already had <strong>largely working</strong> Nix builds. For a start, we also focused on:</p>
+
+    <ul>
+        <li>x86_64-linux builds. All CIs tested also support aarch64-linux. nixbuild.net does not support aarch64-darwin and x86_64-darwin;</li>
+        <li>Flakes. garnix in the non-enterprise plan only supports flakes;</li>
+        <li>GPU builds. Only GithHub supports runners with GPUs currently.</li>
+        <li>Tests without virtualization (e.g., no NixOS tests). garnix and GitHub support this; nixbuild.net seems to <a href="https://docs.nixbuild.net/kvm-builds/">have an Early Access</a> on x86_64-linux, though it seems to be Early Access <a href="https://blog.nixbuild.net/posts/2021-10-01-kvm-builds-supported-on-nixbuild-net.html">since 2021</a>.</li>
+    </ul>
+
+    <p>In the future, we might have different test types, excluding from those CIs
+    that don't support the required features.</p>
+
+    <aside role="alert">
+        <p>This benchmark, as well as this text, was created by people at garnix &mdash; one of the
+        CIs benchmarked. This will no doubt influence the results in ways that are
+        likely favorable to garnix. For example, there is publication bias coming
+        from the fact that we probably wouldn't have created this benchmark if
+        we didn't think we were faster than alternatives, or published it at
+        the end if that assumption had been wrong.
+        </p>
+        <p>In addition to looking for yourself at what it is doing, you should
+        consider also <strong>running it</strong> yourself, with modifications,
+        and against different repos. And if your conclusions differ from the
+        text or results here, open a PR against our benchmark repo!
+        </p>
+    </aside>
+
+    <h1>The results</h1>
+        <div id="dashboard" style="display: none;">
+            <!-- Tab Navigation -->
+            <div class="tabs" id="tabs">
+                <!-- Tabs will be populated by JavaScript -->
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filters">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeFirst" onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include first commit
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeOthers" checked onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include other commits
+                </label>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+
+            <!-- Statistics Container -->
+            <div class="stats" id="stats">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <!-- Platform Legend -->
+            <div class="platforms" id="platforms">
+                <!-- Platform legend will be populated by JavaScript -->
+            </div>
+        </div>
+
+    <h1>Cost</h1>
+
+    <p>Besides garnix, all tested CI systems use GitHub Actions. They therefore incur the associated costs in addition to any other costs. For public repos, GitHub Actions is free <strong>if you use a single standard runner</strong>; for private ones it is not, though even a free account gets free minutes.</p>
+
+    <p>Pricing is not, for the most part, fully usage-based:</p>
+    <ul>
+        <li>GitHub plans include some free minutes (amount varies depending on plan)</li>
+        <li>nixbuild.net includes 1,500 free CPU/minutes</li>
+        <li>The garnix free plan includes 1,500 free minutes. The individual plan includes 10,000 minutes.</li>
+        <li>Cachix includes 5GB of free cache for open source projects.</li>
+        <li>garnix also grants <a href="https://garnix.io/docs/open_source">free CI for open source projects</a> that benefit the wider community (all tested repos would qualify).</li>
+    </ul>
+
+    <p>The feature set is also not the same:</p>
+    <ul>
+        <li>Cachix, garnix and nixbuild.net offer a Nix substituter/cache.
+          magic-nix-cache also caches build artifacts, but not in a way that is
+          usable as a substituter without an additional service.</li>
+        <li>All garnix paid plans also include a 2 vCPU, 4 GB RAM server, and 10,000
+          free PR deployment minutes.</li>
+    </ul>
+
+    <p>Because of how billing works, different CIs favor different setups
+    in terms of cost. For example:</p>
+    <ul>
+        <li>GitHub Actions in parallel and garnix work best, price-wise,
+        when different builds are quite independent of one another.</li>
+        <li>Alternatively, for garnix, pricing is better if you combine many
+            packages into one, even though performance is not necessarily
+            very different due to dynamic CPU allocation.</li>
+        <li>GitHub Actions in general, and in parallel even more, works
+        best when each build step fully uses the available CPUs.</li>
+        <li>nixbuild.net is generally very good at billing, by which we mean
+        that there are no ways that are less good </li>
+    </ul>
+
+    <h1>Methodology</h1>
+
+    <p>We wrote a script that:</p>
+
+    <ul>
+        <li>Takes as an argument a repo to be tested. This repo must have a flake file.</li>
+        <li>Gets the last 10 commits in that repo. For each of those commits:
+            <ul>
+                <li>It checks the commit out, and finds the derivations to build. This <strong>only includes x86_64-linux builds</strong>.</li>
+                <li>For each of the benchmark types (garnix, magic-nix-cache, etc.):
+                    <ul>
+                        <li>It makes the changes necessary to set up that type of CI (deleting the existing <code>.github</code> and creating a new one, for example).</li>
+                        <li>Pushes that changed commit to a new branch in a separate repo.</li>
+                        <li>Waits for the check suite to finish.</li>
+                        <li>Records the timing GitHub gives us for the check suite.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>For configuration:</p>
+
+    <ul>
+        <li>We used the default GitHub Linux runner. GitHub Actions has runners of up to 96-cores, which cost correspondingly much. For setups 1-3, this would presumably speed up builds substantially; for 4, presumably only a little. For all of 1-4, it would increase costs by the same amount. Changing this would drive up the costs of benchmarking by quite a lot, however.</li>
+        <li>Our Cachix cache was 50GB in size.</p>
+        <li>nixbuild.net was left on the default configuration, but the CI Workflow (with remote stores) was used).</li>
+    </ul>
+
+    <p>If you'd like to try it out yourself, you can follow these steps:</p>
+
+    <ul>
+        <li>Fork the <a href="https://github.com/garnix-io/benchmark-github">benchmark-github</a> and <a href="https://github.com/garnix-io/benchmark-github">benchmark-garnix</a> repos;</li>
+        <li>Change the references in <code>benchmarking.ts</code> from <code>garnix-io/benchmark-github</code> and <code>garnix-io/benchmark-garnix</code> to your new forked repo names;</li>
+        <li>Add your own CACHIX_AUTH_TOKEN and NIXBUILD_NET_TOKEN to your GitHub repository secrets;</li>
+        <li>Enable garnix on your fork of <code>benchmark-garnix</code>;</li>
+        <li>Clone <a href="https://github.com/garnix-io/benchmarks">the benchmark repo</a>;</li>
+        <li>Add a token for GitHub API calls (with e.g. <code>gh login</code>);</li>
+        <li>From inside your clone, run <code>nix run .#benchmark -- &lt;REPO&gt;</code> (for example, <code>nix run .#benchmark atuinsh/atuin</code>).</li>
+    </ul>
+
+    <p><strong>Important notes</strong>:</p>
+
+    <ul>
+        <li>You may run up a relatively large bill, across four different services.</li>
+        <li>Check that all CI systems are succeeding and failing the same tests before
+          looking at the timings! Sometimes CIs will finish quicker than they
+          should because they are failing when they shouldn't. And some setups
+          are fail-on-first-error (e.g. GitHub Actions in serial); most aren't.</li>
+        <li>garnix has a <strong>global</strong> cache. This means that (for public repos at least) if <strong>anyone</strong> built a particular commit, it'll likely be cached. For fairness, then, don't test garnix on repos that already use garnix, and don't retest on the same commits you've already test.</li>
+        <li>Make sure benchmarks don't affect one another. For example, if you run two different types of CI that write to the same cache (Cachix, garnix, magic-nix-cache, and nixbuild.net), you will get artifically low timings</p>
+        <li>Queuing in builds is accounted for differently between garnix and CIs using GitHub Actions. The amount of time spend in a queue is <strong>not</strong> counted in the total time for GitHub Actions, but it <strong>is</strong> for garnix. It's somewhat rare that you will be queued with garnix, but potentially if you run multiple tests in parallel it will happen.</li>
+    </ul>
+
+    <h1>Future improvements</h1>
+
+    <p>There are a few benchmarks missing:</p>
+
+    <ul>
+        <li>magic-nix-cache with FlakeHub Cache (only available for private repos);</li>
+        <li>garnix with incremental builds (faster for most compiled languages, but involves some manual, per-repo work);</li>
+        <li>nixbuild.net <strong>without</strong> remote store building (slower, but more stable).</li>
+        <li>Different runner sizes for GitHub Actions.</li>
+        <li>ARM Linux and Macs. nixbuild.net doesn't support Mac builds yet, and for the others benchmarking may get expensive, however.</li>
+    </ul>
+
+    <p>Ideally, we would also be more systematic in what repositories we check. Most starred repositories that are not starter templates or documentation, with a flake.nix which builds a substantial part of the project (instead of e.g. just devshells) might be a good criterion. Unfortunately, we couldn't figure out how to get GitHub search to accurately show repos, ordered by stars, with a flake.nix.</p>
+        <div class="loading" id="loading">Loading data...</div>
+        <div class="error" id="error" style="display: none;">Error loading data. Please check that dashboard_data.json exists.</div>
+
+        <div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
