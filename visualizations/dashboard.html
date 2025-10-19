@@ -55,7 +55,16 @@
         <div id="dashboard" style="display: none;">
             <!-- Summary Chart -->
             <div class="summary-section">
-                <h2>Performance Summary: Relative Speed Comparison</h2>
+                <h2>Performance Summary: Relative Slowdown Comparison</h2>
+
+                <!-- Repository Filter Controls -->
+                <div class="repo-filters">
+                    <label>Include repositories:</label>
+                    <div id="repoCheckboxes">
+                        <!-- Repository checkboxes will be populated by JavaScript -->
+                    </div>
+                </div>
+
                 <div class="chart-container">
                     <canvas id="summaryChart"></canvas>
                 </div>

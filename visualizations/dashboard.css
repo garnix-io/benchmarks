@@ -100,6 +100,40 @@ code {
     color: #007bff;
 }
 
+/* Summary Section */
+.summary-section {
+    margin-bottom: 40px;
+}
+
+.summary-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.repo-filters {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.repo-filters label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+    color: #495057;
+}
+
+#repoCheckboxes {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+#repoCheckboxes .filter-checkbox {
+    margin-bottom: 0;
+}
+
 /* Chart Container */
 .chart-container {
     position: relative;

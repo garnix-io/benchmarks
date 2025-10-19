@@ -1290,42 +1290,36 @@
       }
     ]
   ],
-  "summary": [
-    {
-      "platform": "garnix",
-      "average_time": 8.879444444444443,
-      "slowdown_factor": 1.0,
-      "repo_count": 3
+  "summary_repo_data": {
+    "github-actions-parallel": {
+      "helix-editor/helix": 15.443333333333333,
+      "agda/agda": 31.063333333333333,
+      "crytic/echidna": 120.0
     },
-    {
-      "platform": "github-actions-cachix-parallel",
-      "average_time": 18.481111111111108,
-      "slowdown_factor": 2.081336419946193,
-      "repo_count": 3
+    "github-actions-magic-nix-cache-parallel": {
+      "helix-editor/helix": 19.631666666666668,
+      "agda/agda": 43.61833333333333,
+      "crytic/echidna": 120.0
     },
-    {
-      "platform": "nixbuild-net",
-      "average_time": 26.294999999999998,
-      "slowdown_factor": 2.9613339172871176,
-      "repo_count": 3
+    "nixbuild-net": {
+      "helix-editor/helix": 7.1033333333333335,
+      "agda/agda": 18.136666666666663,
+      "crytic/echidna": 53.644999999999996
     },
-    {
-      "platform": "github-actions-serial",
-      "average_time": 43.05166666666667,
-      "slowdown_factor": 4.8484639929925555,
-      "repo_count": 3
+    "github-actions-cachix-parallel": {
+      "helix-editor/helix": 9.903333333333332,
+      "agda/agda": 18.261666666666667,
+      "crytic/echidna": 27.278333333333325
     },
-    {
-      "platform": "github-actions-parallel",
-      "average_time": 55.50222222222222,
-      "slowdown_factor": 6.250641306388038,
-      "repo_count": 3
+    "garnix": {
+      "helix-editor/helix": 4.91,
+      "agda/agda": 12.053333333333333,
+      "crytic/echidna": 9.675
     },
-    {
-      "platform": "github-actions-magic-nix-cache-parallel",
-      "average_time": 61.083333333333336,
-      "slowdown_factor": 6.879184133141464,
-      "repo_count": 3
+    "github-actions-serial": {
+      "helix-editor/helix": 19.426666666666666,
+      "agda/agda": 50.453333333333326,
+      "crytic/echidna": 59.275
     }
-  ]
+  }
 }

@@ -1,7 +1,8 @@
 // Global variables
 let repoNames = [];
 let allDatasets = [];
-let summaryData = [];
+let summaryRepoData = {};
+let enabledRepos = new Set();
 let chart = null;
 let summaryChart = null;
 let currentTab = 0;
@@ -15,12 +16,12 @@ function generatePlatformColors(platforms) {
         '#607D8B', '#795548', '#FF5722', '#673AB7', '#3F51B5',
         '#009688', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800'
     ];
-    
+
     const colorMap = {};
     platforms.forEach((platform, index) => {
         colorMap[platform] = colors[index % colors.length];
     });
-    
+
     return colorMap;
 }
 
@@ -39,7 +40,7 @@ function getPlatformDisplayName(platform) {
         'github-actions-magic-nix-cache-parallel': 'GitHub Actions + Magic Nix Cache (Parallel)',
         'nixbuild-net': 'nixbuild.net'
     };
-    
+
     return nameMap[platform] || platform.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
@@ -51,12 +52,15 @@ async function loadData() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        
+
         // Process the data structure
         repoNames = data.repo_names;
         allDatasets = data.datasets;
-        summaryData = data.summary || [];
-        
+        summaryRepoData = data.summary_repo_data || {};
+
+        // Initialize all repos as enabled
+        enabledRepos = new Set(repoNames);
+
         // Extract all unique platforms from the datasets
         const platformSet = new Set();
         allDatasets.forEach(repoDatasets => {
@@ -65,20 +69,20 @@ async function loadData() {
             });
         });
         allPlatforms = Array.from(platformSet).sort();
-        
+
         // Generate colors for all platforms
         platformColors = generatePlatformColors(allPlatforms);
-        
+
         // Update dataset colors to use dynamically generated colors
         updateDatasetColors();
-        
+
         // Hide loading, show dashboard
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-        
+
         // Initialize the dashboard
         initializeDashboard();
-        
+
     } catch (error) {
         console.error('Error loading data:', error);
         document.getElementById('loading').style.display = 'none';
@@ -86,17 +90,66 @@ async function loadData() {
     }
 }
 
+function calculateSummaryData() {
+    if (Object.keys(summaryRepoData).length === 0 || enabledRepos.size === 0) {
+        return [];
+    }
+
+    const enabledReposArray = Array.from(enabledRepos);
+    const platformSlowdownFactors = {};
+
+    // For each enabled repository, calculate slowdown factors
+    for (const repo of enabledReposArray) {
+        const repoTimes = {};
+
+        // Get times for this repo across all platforms
+        for (const [platform, repoData] of Object.entries(summaryRepoData)) {
+            if (repoData[repo] !== undefined) {
+                repoTimes[platform] = repoData[repo];
+            }
+        }
+
+        // Find fastest platform for this repo
+        const fastestTimeForRepo = Math.min(...Object.values(repoTimes));
+
+        // Calculate slowdown factors for this repo
+        for (const [platform, time] of Object.entries(repoTimes)) {
+            if (!platformSlowdownFactors[platform]) {
+                platformSlowdownFactors[platform] = [];
+            }
+            platformSlowdownFactors[platform].push(time / fastestTimeForRepo);
+        }
+    }
+
+    // Average the slowdown factors across repositories
+    const summaryData = [];
+    for (const [platform, slowdownFactors] of Object.entries(platformSlowdownFactors)) {
+        if (slowdownFactors.length > 0) {
+            const avgSlowdownFactor = slowdownFactors.reduce((a, b) => a + b, 0) / slowdownFactors.length;
+            summaryData.push({
+                platform: platform,
+                slowdown_factor: avgSlowdownFactor,
+                repo_count: slowdownFactors.length
+            });
+        }
+    }
+
+    return summaryData.sort((a, b) => a.slowdown_factor - b.slowdown_factor);
+}
+
 function createSummaryChart() {
     if (summaryChart) {
         summaryChart.destroy();
     }
-    
+
+    const summaryData = calculateSummaryData();
+
     if (summaryData.length === 0) {
         return;
     }
-    
+
     const summaryCtx = document.getElementById('summaryChart').getContext('2d');
-    
+
     summaryChart = new Chart(summaryCtx, {
         type: 'bar',
         data: {
@@ -115,7 +168,7 @@ function createSummaryChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'CI Performance Summary: Relative Speed Comparison (Equal Repository Weighting)',
+                    text: `CI Performance Summary: Relative Slowdown Comparison [lower is better] (${enabledRepos.size}/${repoNames.length} repositories)`,
                     font: { size: 16 }
                 },
                 tooltip: {
@@ -123,9 +176,8 @@ function createSummaryChart() {
                         label: function(context) {
                             const data = summaryData[context.dataIndex];
                             return [
-                                `Slowdown factor: ${data.slowdown_factor.toFixed(2)}x slower`,
-                                `Average time: ${data.average_time.toFixed(1)} minutes`,
-                                `Repositories tested: ${data.repo_count}`
+                                `Average slowdown factor: ${data.slowdown_factor.toFixed(2)}x slower`,
+                                `Repositories tested: ${data.repo_count}/${enabledRepos.size}`
                             ];
                         }
                     }
@@ -158,14 +210,53 @@ function createSummaryChart() {
     });
 }
 
-function initializeDashboard() {
-    // Create summary chart first
+function createRepoCheckboxes() {
+    const container = document.getElementById('repoCheckboxes');
+    container.innerHTML = '';
+
+    repoNames.forEach(repoName => {
+        const label = document.createElement('label');
+        label.className = 'filter-checkbox';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.onchange = () => updateRepoFilter(repoName, checkbox.checked);
+
+        const span = document.createElement('span');
+        span.className = 'checkmark';
+
+        const text = document.createTextNode(repoName);
+
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        label.appendChild(text);
+        container.appendChild(label);
+    });
+}
+
+function updateRepoFilter(repoName, enabled) {
+    if (enabled) {
+        enabledRepos.add(repoName);
+    } else {
+        enabledRepos.delete(repoName);
+    }
+
+    // Recreate summary chart with new filter
     createSummaryChart();
-    
+}
+
+function initializeDashboard() {
+    // Create repository checkboxes
+    createRepoCheckboxes();
+
+    // Create summary chart
+    createSummaryChart();
+
     // Create tab buttons
     const tabsContainer = document.getElementById('tabs');
     tabsContainer.innerHTML = '';
-    
+
     repoNames.forEach((repoName, index) => {
         const button = document.createElement('button');
         button.className = `tab${index === 0 ? ' active' : ''}`;
@@ -173,10 +264,10 @@ function initializeDashboard() {
         button.onclick = () => showTab(index);
         tabsContainer.appendChild(button);
     });
-    
+
     // Create platform legend
     createPlatformLegend();
-    
+
     // Initialize with first tab
     showTab(0);
 }
@@ -184,7 +275,7 @@ function initializeDashboard() {
 function createPlatformLegend() {
     const platformsContainer = document.getElementById('platforms');
     platformsContainer.innerHTML = '';
-    
+
     allPlatforms.forEach(platform => {
         const tag = document.createElement('div');
         tag.className = 'platform-tag';
@@ -211,7 +302,7 @@ const ctx = document.getElementById('performanceChart').getContext('2d');
 function filterData(datasets) {
     const includeFirst = document.getElementById('includeFirst').checked;
     const includeOthers = document.getElementById('includeOthers').checked;
-    
+
     return datasets.map(dataset => {
         const filteredData = dataset.data.filter(point => {
             if (point.x === 0) {
@@ -220,7 +311,7 @@ function filterData(datasets) {
                 return includeOthers;
             }
         });
-        
+
         return {
             ...dataset,
             data: filteredData
@@ -235,7 +326,7 @@ function calculateStats(datasets) {
         dataset.data.forEach(point => allCommitIndices.add(point.x));
     });
     const sortedIndices = Array.from(allCommitIndices).sort((a, b) => a - b);
-    
+
     // Check if any platform is missing data
     let hasMissingData = false;
     datasets.forEach(dataset => {
@@ -244,9 +335,9 @@ function calculateStats(datasets) {
             hasMissingData = true;
         }
     });
-    
+
     const stats = {};
-    
+
     if (!hasMissingData) {
         // No missing data - calculate normally
         datasets.forEach(dataset => {
@@ -263,21 +354,21 @@ function calculateStats(datasets) {
         });
     } else {
         // Missing data - use projection method
-        
+
         // Calculate speed factors for each platform relative to others
         const platformSpeedFactors = {};
-        
+
         datasets.forEach(dataset => {
             const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
             let totalSpeedFactor = 0;
             let comparisons = 0;
-            
+
             // Compare with other platforms for overlapping commits
             datasets.forEach(otherDataset => {
                 if (dataset.label === otherDataset.label) return;
-                
+
                 const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
-                
+
                 // Find overlapping commits
                 for (const [commitIndex, time] of platformData) {
                     if (otherData.has(commitIndex)) {
@@ -290,26 +381,26 @@ function calculateStats(datasets) {
                     }
                 }
             });
-            
+
             if (comparisons > 0) {
                 platformSpeedFactors[dataset.label] = totalSpeedFactor / comparisons;
             } else {
                 platformSpeedFactors[dataset.label] = 1.0; // fallback
             }
         });
-        
+
         // Calculate projected averages
         datasets.forEach(dataset => {
             const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
             const actualTimes = dataset.data.map(d => d.y);
-            
+
             if (actualTimes.length === 0) return;
-            
+
             const speedFactor = platformSpeedFactors[dataset.label];
             let projectedSum = 0;
             let totalCount = 0;
             let missingCount = 0;
-            
+
             // Process all possible commits (both actual and missing)
             sortedIndices.forEach(commitIndex => {
                 if (platformData.has(commitIndex)) {
@@ -320,17 +411,17 @@ function calculateStats(datasets) {
                     // Missing data point - project from other platforms
                     let projectedValue = 0;
                     let sourceCount = 0;
-                    
+
                     datasets.forEach(otherDataset => {
                         if (dataset.label === otherDataset.label) return;
                         const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
-                        
+
                         if (otherData.has(commitIndex)) {
                             projectedValue += otherData.get(commitIndex);
                             sourceCount++;
                         }
                     });
-                    
+
                     if (sourceCount > 0) {
                         // Average other platforms' times and apply speed factor
                         const avgOtherTime = projectedValue / sourceCount;
@@ -340,10 +431,10 @@ function calculateStats(datasets) {
                     }
                 }
             });
-            
+
             const actualAvg = actualTimes.length > 0 ? actualTimes.reduce((a, b) => a + b, 0) / actualTimes.length : 0;
             const projectedAvg = totalCount > 0 ? projectedSum / totalCount : 0;
-            
+
             stats[dataset.label] = {
                 avg: projectedAvg,
                 actualAvg: actualAvg,
@@ -357,7 +448,7 @@ function calculateStats(datasets) {
             };
         });
     }
-    
+
     return stats;
 }
 
@@ -365,9 +456,9 @@ function createChart(datasets, repoName) {
     if (chart) {
         chart.destroy();
     }
-    
+
     const filteredDatasets = filterData(datasets);
-    
+
     chart = new Chart(ctx, {
         type: 'line',
         data: { datasets: filteredDatasets },
@@ -438,14 +529,14 @@ function updateStats(datasets) {
     const stats = calculateStats(datasets);
     const statsContainer = document.getElementById('stats');
     statsContainer.innerHTML = '';
-    
+
     Object.entries(stats).forEach(([platform, stat]) => {
         const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
         const asterisk = stat.isProjected ? '*' : '';
-        const tooltip = stat.isProjected 
-            ? `title="Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)"` 
+        const tooltip = stat.isProjected
+            ? `title="Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)"`
             : '';
-        
+
         statsContainer.innerHTML += `
             <div class="stat-card" ${tooltip}>
                 <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
@@ -458,11 +549,11 @@ function updateStats(datasets) {
 function updateChart() {
     if (currentTab >= 0) {
         const filteredDatasets = filterData(allDatasets[currentTab]);
-        
+
         // Update chart data
         chart.data.datasets = filteredDatasets;
         chart.update();
-        
+
         // Update statistics
         updateStats(filteredDatasets);
     }
@@ -473,9 +564,9 @@ function showTab(tabIndex) {
     document.querySelectorAll('.tab').forEach((tab, index) => {
         tab.classList.toggle('active', index === tabIndex);
     });
-    
+
     currentTab = tabIndex;
-    
+
     // Update chart and stats with current filters
     createChart(allDatasets[tabIndex], repoNames[tabIndex]);
     const filteredDatasets = filterData(allDatasets[tabIndex]);

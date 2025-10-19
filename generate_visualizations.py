@@ -100,39 +100,18 @@ def generate_summary_data(all_data):
     """Calculate summary statistics with equal repository weighting"""
     from collections import defaultdict
     
-    platform_repo_averages = defaultdict(list)
+    # Store per-repo averages for each platform for client-side filtering
+    platform_repo_data = defaultdict(dict)
     
     # Calculate average for each platform within each repo
     for repo_name, repo_data in all_data.items():
         for platform, commits in repo_data.items():
             if commits:
                 repo_avg = sum(commit['time_minutes'] for commit in commits) / len(commits)
-                platform_repo_averages[platform].append(repo_avg)
+                platform_repo_data[platform][repo_name] = repo_avg
     
-    # Average the repo averages (equal weighting per repo)
-    platform_global_averages = {}
-    for platform, repo_avgs in platform_repo_averages.items():
-        if repo_avgs:
-            platform_global_averages[platform] = sum(repo_avgs) / len(repo_avgs)
-    
-    # Find fastest platform
-    if not platform_global_averages:
-        return []
-    
-    fastest_time = min(platform_global_averages.values())
-    
-    # Calculate slowdown ratios
-    summary_data = []
-    for platform, avg_time in platform_global_averages.items():
-        slowdown_factor = avg_time / fastest_time
-        summary_data.append({
-            'platform': platform,
-            'average_time': avg_time,
-            'slowdown_factor': slowdown_factor,
-            'repo_count': len(platform_repo_averages[platform])
-        })
-    
-    return sorted(summary_data, key=lambda x: x['slowdown_factor'])
+    # Return the raw per-repo data for client-side processing
+    return dict(platform_repo_data)
 
 def generate_dashboard_data(all_data):
     """Generate JSON data structure for the dashboard"""
@@ -166,13 +145,13 @@ def generate_dashboard_data(all_data):
         repo_names.append(repo_name)
         all_datasets.append(datasets)
     
-    # Generate summary data
-    summary_data = generate_summary_data(all_data)
+    # Generate summary data (per-repo platform averages)
+    summary_repo_data = generate_summary_data(all_data)
     
     return {
         'repo_names': repo_names,
         'datasets': all_datasets,
-        'summary': summary_data
+        'summary_repo_data': summary_repo_data
     }
 
 def main():
