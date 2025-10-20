@@ -14,10 +14,16 @@ let enabledPlatforms = new Set(); // Track which platforms are enabled for displ
 
 // Generate colors for platforms dynamically
 function generatePlatformColors(platforms) {
+    // Paul Tol's medium contrast qualitative color scheme
+    // Designed to be distinguishable for all types of color vision deficiency
     const colors = [
-        '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336',
-        '#607D8B', '#795548', '#FF5722', '#673AB7', '#3F51B5',
-        '#009688', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800'
+        '#6699CC', // Light blue
+        '#004488', // Dark blue
+        '#EECC66', // Light yellow
+        '#994455', // Dark red
+        '#997700', // Dark yellow/olive
+        '#EE99AA', // Light red/pink
+        '#666666'  // Medium gray
     ];
 
     const colorMap = {};
@@ -751,7 +757,7 @@ function createChart(datasets, repoName) {
             maintainAspectRatio: false,
             interaction: {
                 intersect: false,
-                mode: 'index'
+                mode: 'nearest'
             },
             plugins: {
                 title: {
