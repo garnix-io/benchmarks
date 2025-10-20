@@ -212,6 +212,16 @@
                     fact finish, on average taking around 4 hours. We therefore
                     again put a &gt; sign in the relevant averages</li>
                 </li>
+                <li>garnix timed out during evaluation of two of the builds of
+                    the first cryptic/echidna commit. This is a <i>different</i>
+                    type of timeout than above, set in the CI instead of in
+                    the benchmark script. Because of this, the builds did in
+                    fact not continue. It was our mistake not to configure
+                    this limit to be higher so the results were more comparable.
+                    It's unclear how best to fairly account for all these cases.
+                    We adopted the same attitude as above, considering this
+                    a lower bound.
+                </li>
 
             </ul>
             </p>
@@ -273,19 +283,26 @@
         claims a big speedup (which presumably at least some people are seeing
         if they're using it).
         Part of the reason seems to be slow uploads to the cache (example <a
-            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>),
-        but it could also be that it works best with certain repos.
+            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>).
+        It could be that <i>serial</i> GitHub Actions builds with magic-nix-cache
+        are faster than serial GitHub Actions builds without, since downloads
+        can be kicked off early while waiting on CPU-intensive work.
         </li>
-        <li>For some projects, <i>evaluation matters a lot</i>. This was the
-            case with crytic/echidna. nixbuild.net performs well in building,
-            but doesn't help with evaluation. We could provision more powerful
-            GitHub runners, but given how nixbuild.net operates, we would be
-            paying for them even after the evaluation, when they're just waiting
-            on builds.
+        <li>It's not clear why several CIs choked so badly on cryptic/echidna.
+            The issue seems to always have been the package echidna-redistributable,
+            but sometimes it was seemingly <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18616753532/job/53082350464#step:6:68">
+            very slow uploads</a>, and sometimes <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18624644003/job/53100738727#step:5:478">
+            slow builds</a> (click on the Settings button and then "Show Timestamp" to see timestamps).
+            <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18619179927/job/53088012303">Disk space also seems to have been an issue</a>.
+            It's an outlier that deserves more careful examination, though it
+            does not seem to be a fluke &mdash; it happened consistently on
+            the same package across CIs, and across tests many hours apart,
+            even as other packages built successfully.
         </li>
         <li>It's not entirely clear why several CIs had such a hard time with
             crytic/echidna. It is specifically, it seems,
-            echidna-redistributable. It seems <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18619179927/job/53088012303">disk space is an issue</a>; given
+            echidna-redistributable. It seems
+
             the slowdown witnessed potentially due to tmpfs.
         </li>
 
