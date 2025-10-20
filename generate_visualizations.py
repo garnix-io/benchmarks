@@ -223,7 +223,7 @@ def main():
     all_data = parse_data()
     
     # Create output directory
-    output_dir = Path("visualizations")
+    output_dir = Path("public")
     output_dir.mkdir(exist_ok=True)
     
     print(f"Found data for {len(all_data)} repositories")
@@ -242,7 +242,7 @@ def main():
     print()
     print("To view the dashboard:")
     print("1. Run: python serve.py")
-    print("2. Open http://localhost:8000/dashboard.html in your browser")
+    print("2. Open http://localhost:8000/index.html in your browser")
     print()
     print("(The server is needed to avoid CORS issues when loading JSON files locally)")
 

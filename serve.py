@@ -11,32 +11,19 @@ import sys
 from pathlib import Path
 
 def main():
-    # Change to the visualizations directory
-    viz_dir = Path("visualizations")
-    if not viz_dir.exists():
-        print("Error: visualizations directory not found!")
-        print("Please run generate_visualizations.py first.")
-        sys.exit(1)
-    
-    os.chdir(viz_dir)
-    
-    # Check if required files exist
-    if not Path("dashboard.html").exists():
-        print("Error: dashboard.html not found in visualizations directory!")
-        sys.exit(1)
-    
-    if not Path("dashboard_data.json").exists():
+
+    if not Path("public/dashboard_data.json").exists():
         print("Error: dashboard_data.json not found!")
         print("Please run generate_visualizations.py first to generate the data.")
         sys.exit(1)
-    
+
     # Start the server
     PORT = 8000
     Handler = http.server.SimpleHTTPRequestHandler
-    
+
     try:
         with socketserver.TCPServer(("", PORT), Handler) as httpd:
-            print(f"Serving dashboard at http://localhost:{PORT}/dashboard.html")
+            print(f"Serving dashboard at http://localhost:{PORT}/")
             print("Press Ctrl+C to stop the server")
             httpd.serve_forever()
     except KeyboardInterrupt:

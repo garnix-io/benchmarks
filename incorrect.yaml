@@ -1,5 +1,6 @@
 # Builds that should be treated as genuine failures
-# All other builds (not listed here) will be treated as successful, regardless of their original JSON status
+# All other builds (not listed here) will be treated as successful,
+# regardless of their original JSON status, since they failed *correctly*
 # These are all the GitHub Actions Serial failures in crytic/echidna
 
 genuine_failures:

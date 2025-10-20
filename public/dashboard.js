@@ -50,7 +50,7 @@ function getPlatformDisplayName(platform) {
 // Load data from JSON file
 async function loadData() {
     try {
-        const response = await fetch('dashboard_data.json');
+        const response = await fetch('public/dashboard_data.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
