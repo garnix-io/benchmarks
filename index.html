@@ -308,6 +308,10 @@
     </ul>
 
     <p>Ideally, we would also be more systematic in what repositories we check. Most starred repositories that are not starter templates or documentation, with a flake.nix which builds a substantial part of the project (instead of e.g. just devshells) might be a good criterion. Unfortunately, we couldn't figure out how to get GitHub search to accurately show repos, ordered by stars, with a flake.nix.</p>
+
+    <p>It was probably a mistake to let GitHub Actions (serial) fail on first
+    error, since it means it did less work than other CIs. If we were to rerun
+    this, we would change that.</p>
         <div class="loading" id="loading">Loading data...</div>
         <div class="error" id="error" style="display: none;">Error loading data. Please check that dashboard_data.json exists.</div>
 
@@ -315,9 +319,6 @@
         </div>
     </div>
 
-    <p>It was probably a mistake to let GitHub Actions (serial) fail on first
-    error, since it means it did less work than other CIs. If we were to rerun
-    this, we would change that.</p>
 
     <script src="public/dashboard.js"></script>
 </body>
