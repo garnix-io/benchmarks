@@ -18,11 +18,15 @@
 
     <ul id="ci-list">
         <li>(1) GitHub Actions, in serial and parallel, without any caching.</li>
-        <li>(2) GitHub Actions in parallel with Cachix for caching.</li>
-        <li>(3) GitHub Actions in parallel with magic-nix-cache for caching.</li>
+        <li>(2) GitHub Actions in parallel with magic-nix-cache for caching.</li>
+        <li>(3) GitHub Actions in parallel with Cachix for caching.</li>
         <li>(4) GitHub Actions with nixbuild.net for building (using the CI workflow, with remote store building).</li>
         <li>(5) garnix (without incremental builds).</li>
     </ul>
+
+    <p>These setups span the range of using GitHub Actions for everything (1-2), to
+    including external caches (3), to including external builds (4), to
+    having external <i>evaluators</i> too, and not using GitHub runners for <i>anything</i> (5).</p>
 
     <p>We picked more popular repos that already had <strong>largely working</strong> Nix builds. For a start, we also focused on:</p>
 
@@ -71,13 +75,18 @@
                     <ul>
                         <li>It makes the changes necessary to set up that type of CI (deleting the existing <code>.github</code> and creating a new one, for example).</li>
                         <li>Pushes that changed commit to a new branch in a separate repo.</li>
-                        <li>Waits for the check suite to finish.</li>
+                        <li>Waits for the check suite to finish, or times out after 2 hours.</li>
                         <li>Records the timing GitHub gives us for the check suite.</li>
                     </ul>
                 </li>
             </ul>
         </li>
     </ul>
+
+    <p>You can see all the GitHub Actions workflow runs (for 1-4) <a href="https://github.com/garnix-io/benchmark-github/actions">here</a> and the garnix logs <a href="https://garnix.io/repo/garnix-io/benchmark-garnix">here</a>.</p>
+
+    <p>Note that the packages and checks that we checked may differ from
+    the ones that are enabled on the repo's own CI.</p>
 
     <p>For configuration:</p>
 
@@ -86,6 +95,8 @@
         <li>Our Cachix cache was 50GB in size.</p>
         <li>nixbuild.net was left on the default configuration, but the CI Workflow (with remote stores) was used.</li>
     </ul>
+
+    <h2>Running it yourself</h2>
 
     <p>If you'd like to try it out yourself, you can follow these steps:</p>
 
@@ -182,12 +193,45 @@
                 <!-- Platform legend will be populated by JavaScript -->
             </div>
 
+            <p>
+            Some notes:
+
+            <ul>
+                <li>Some of the agda/agda builds were (correctly) failing
+                on all CIs. But GitHub Action Serial fails on first error,
+                and so does not report all errors and all successes. We
+                therefore added a &gt; sign in the relevant averages</li>
+                <li>GitHub Action Serial also <i>incorrectly</i> failed on
+                    all crytic/echidna builds, and was therefore excluded
+                    from those graphs</li>
+                <li>GitHub Actions Parallel and nixbuild.net timed out in all
+                    or some (respectively) of their crytic/echidna builds.
+                    Our code stopped checking the timings after 2 hours, and
+                    so we labelled them with 2 hours and used that to calculate
+                    the average. But this is an underestimate: they did in
+                    fact finish, on average taking around 4 hours. We therefore
+                    again put a &gt; sign in the relevant averages</li>
+                </li>
+
+            </ul>
+            </p>
+
             <!-- Summary Chart -->
             <div class="summary-section">
+
+
+
                 <p>We can also summarize the average slowdown for each CI,
                 relative to the fastest one. We calculated that by, for each
                 repo, normalizing the average of each CI by the fastest, and
                 then averaging <i>those</i> numbers.
+                </p>
+
+                <p>Note that here we still included the timeouts and early
+                failures. Therefore, the average for GitHub Action Serial
+                when agda/agda is included, and GitHub Actions and nixbuild.net
+                when crytic/echidna is included, should be thought of as a
+                <i>lower bound</i>.
                 </p>
 
                 <!-- Repository Filter Controls -->
@@ -239,6 +283,12 @@
             paying for them even after the evaluation, when they're just waiting
             on builds.
         </li>
+        <li>It's not entirely clear why several CIs had such a hard time with
+            crytic/echidna. It is specifically, it seems,
+            echidna-redistributable. It seems <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18619179927/job/53088012303">disk space is an issue</a>; given
+            the slowdown witnessed potentially due to tmpfs.
+        </li>
+
         <li>garnix performed best across all repos.
         </li>
     </ul>
@@ -252,7 +302,7 @@
     <ul>
         <li>magic-nix-cache with FlakeHub Cache (only available for private repos);</li>
         <li>garnix with incremental builds (faster for most compiled languages, but involves some manual, per-repo work);</li>
-        <li>nixbuild.net <strong>without</strong> remote store building (slower, but more stable).</li>
+        <li>nixbuild.net <strong>without</strong> remote store building (slower, but more stable &mdash; though we didn't notice any instabilities).</li>
         <li>Different runner sizes for GitHub Actions.</li>
         <li>ARM Linux and Macs. nixbuild.net doesn't support Mac builds yet, and for the others benchmarking may get expensive, however.</li>
     </ul>
@@ -264,6 +314,10 @@
         <div>
         </div>
     </div>
+
+    <p>It was probably a mistake to let GitHub Actions (serial) fail on first
+    error, since it means it did less work than other CIs. If we were to rerun
+    this, we would change that.</p>
 
     <script src="dashboard.js"></script>
 </body>

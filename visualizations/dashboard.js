@@ -118,7 +118,7 @@ function calculateSummaryData() {
                         return false;
                     }
 
-                    // Filter by failed builds setting (timed_out is not considered a failed build)
+                    // Filter by failed builds setting (timed_out and early_fail are not considered failed builds for filtering)
                     if (commit.status === 'failure' && !includeFailedBuilds) {
                         return false;
                     }
@@ -471,7 +471,7 @@ function filterData(datasets) {
                 return false;
             }
 
-            // Filter by build status (only genuine failures are filtered, not timed_out)
+            // Filter by build status (only genuine failures are filtered, not early_fail or timed_out)
             if (point.status === 'failure' && !includeFailedBuildsChart) {
                 return false;
             }
@@ -479,15 +479,18 @@ function filterData(datasets) {
             return true;
         });
 
-        // Separate genuine failures from successful/timed_out builds
-        // Timed out builds should have connecting lines (included in main data)
+        // Separate genuine failures from other builds
+        // Timed out and early_fail builds should have connecting lines (included in main data)
         const mainData = filteredData.filter(point => point.status !== 'failure');
         const failedData = filteredData.filter(point => point.status === 'failure');
+        const earlyFailData = filteredData.filter(point => point.status === 'early_fail');
 
         return {
             ...dataset,
             data: mainData,
-            failedData: failedData
+            failedData: failedData,
+            earlyFailData: earlyFailData,
+            hasEarlyFail: earlyFailData.length > 0
         };
     });
 }
@@ -509,7 +512,7 @@ function calculateStats(datasets) {
                 return false;
             }
 
-            // Filter by build status (only genuine failures are filtered, not timed_out)
+            // Filter by build status (only genuine failures are filtered, not early_fail or timed_out)
             if (point.status === 'failure' && !includeFailedBuildsChart) {
                 return false;
             }
@@ -549,6 +552,10 @@ function calculateStats(datasets) {
                 // Check if any builds timed out (assuming 120 minutes = 2 hours timeout)
                 const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
                 const hasTimedOut = timedOutCount > 0;
+                
+                // Check if any builds are early_fail
+                const earlyFailCount = dataset.data.filter(d => d.status === 'early_fail').length;
+                const hasEarlyFail = earlyFailCount > 0;
 
                 stats[dataset.label] = {
                     avg: times.reduce((a, b) => a + b, 0) / times.length,
@@ -557,6 +564,8 @@ function calculateStats(datasets) {
                     count: times.length,
                     timedOutCount: timedOutCount,
                     hasTimedOut: hasTimedOut,
+                    earlyFailCount: earlyFailCount,
+                    hasEarlyFail: hasEarlyFail,
                     isProjected: false
                 };
             }
@@ -647,6 +656,10 @@ function calculateStats(datasets) {
             // Check for timed out builds in projected method
             const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
             const hasTimedOut = timedOutCount > 0;
+            
+            // Check if any builds are early_fail
+            const earlyFailCount = dataset.data.filter(d => d.status === 'early_fail').length;
+            const hasEarlyFail = earlyFailCount > 0;
 
             stats[dataset.label] = {
                 avg: projectedAvg,
@@ -658,6 +671,8 @@ function calculateStats(datasets) {
                 missingCount: missingCount,
                 timedOutCount: timedOutCount,
                 hasTimedOut: hasTimedOut,
+                earlyFailCount: earlyFailCount,
+                hasEarlyFail: hasEarlyFail,
                 isProjected: missingCount > 0,
                 speedFactor: speedFactor
             };
@@ -683,7 +698,7 @@ function createChart(datasets, repoName) {
             return;
         }
         
-        // Create main dataset with all builds (success + timed_out) in one continuous line
+        // Create main dataset with all builds (success + timed_out + early_fail) in one continuous line
         if (dataset.data.length > 0) {
             chartDatasets.push({
                 ...dataset,
@@ -692,12 +707,16 @@ function createChart(datasets, repoName) {
                 pointStyle: function(context) {
                     const point = context.parsed ? dataset.data[context.dataIndex] : null;
                     if (!point) return 'circle';
-                    return point.status === 'timed_out' ? 'triangle' : 'circle';
+                    if (point.status === 'timed_out') return 'triangle';
+                    if (point.status === 'early_fail') return 'crossRot';
+                    return 'circle';
                 },
                 pointRadius: function(context) {
                     const point = context.parsed ? dataset.data[context.dataIndex] : null;
                     if (!point) return 4;
-                    return point.status === 'timed_out' ? 5 : 4;
+                    if (point.status === 'timed_out') return 5;
+                    if (point.status === 'early_fail') return 6;
+                    return 4;
                 }
             });
         }
@@ -749,6 +768,8 @@ function createChart(datasets, repoName) {
                             let status = '';
                             if (context.raw.status === 'failure') {
                                 status = ' (FAILED)';
+                            } else if (context.raw.status === 'early_fail') {
+                                status = ' (EARLY FAIL)';
                             } else if (context.raw.status === 'timed_out') {
                                 status = ' (TIMED OUT - 2+ HOURS)';
                             }
@@ -875,19 +896,35 @@ function updateStats(datasets) {
         
         const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
 
-        // Determine asterisk and tooltip text
+        // Determine prefix, asterisk and tooltip text
+        let prefix = '';
         let asterisk = '';
         let tooltipText = '';
-
-        if (stat.isProjected && stat.hasTimedOut) {
+        
+        if (stat.hasEarlyFail || stat.hasTimedOut) {
+            prefix = '>';
+        }
+        
+        if (stat.isProjected && stat.hasTimedOut && stat.hasEarlyFail) {
             asterisk = '**';
-            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some builds timed out (took longer than 2 hours). These were counted as taking 2 hours.`;
+            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some or all of these builds took longer than 2 hours to complete, and were clipped at 2 hours. Some or all of these runs failed on first error, and so did not do everything other runs did.`;
+        } else if (stat.isProjected && stat.hasTimedOut) {
+            asterisk = '**';
+            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some or all of these builds took longer than 2 hours to complete, and were clipped at 2 hours.`;
+        } else if (stat.isProjected && stat.hasEarlyFail) {
+            asterisk = '*';
+            tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some or all of these runs failed on first error, and so did not do everything other runs did.`;
         } else if (stat.isProjected) {
             asterisk = '*';
             tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)`;
+        } else if (stat.hasTimedOut && stat.hasEarlyFail) {
+            asterisk = '*';
+            tooltipText = `Some or all of these builds took longer than 2 hours to complete, and were clipped at 2 hours. Some or all of these runs failed on first error, and so did not do everything other runs did.`;
         } else if (stat.hasTimedOut) {
             asterisk = '*';
-            tooltipText = `Some builds timed out (took longer than 2 hours). These were counted as taking 2 hours.`;
+            tooltipText = `Some or all of these builds took longer than 2 hours to complete, and were clipped at 2 hours.`;
+        } else if (stat.hasEarlyFail) {
+            tooltipText = `Some or all of these runs failed on first error, and so did not do everything other runs did.`;
         }
 
         // Create the div element properly
@@ -898,7 +935,7 @@ function updateStats(datasets) {
         }
 
         statCard.innerHTML = `
-            <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
+            <div class="stat-number" style="color: ${color}">${prefix}${stat.avg.toFixed(1)}m${asterisk}</div>
             <div class="stat-label">${platform}<br>Average Time (${stat.count}/${stat.totalCount || stat.count} commits)</div>
         `;
 

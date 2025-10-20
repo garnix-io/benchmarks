@@ -419,70 +419,70 @@
             "y": 50.25,
             "commit_hash": "dec13c0222a98240cc45b925805e6e282ee667be",
             "branch_name": "test-run-1760721361722",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 1,
             "y": 53.31666666666667,
             "commit_hash": "6448df47715572262973e9db0dd949caf002f888",
             "branch_name": "test-run-1760721361731",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 2,
             "y": 50.516666666666666,
             "commit_hash": "0f42358aa9579c38c6e5b4e7b895a73e39faa49c",
             "branch_name": "test-run-1760721361745",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 3,
             "y": 50.68333333333333,
             "commit_hash": "5739b425b610874b24044d3c42f6fcbbf9b93c26",
             "branch_name": "test-run-1760721361755",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 4,
             "y": 49.78333333333333,
             "commit_hash": "c822b5c40fead11743ad10d3a704dbfcfc2d51ad",
             "branch_name": "test-run-1760721361762",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 5,
             "y": 50.0,
             "commit_hash": "4bcf57c71fbb5ce21b0fb38c00682718514ea54e",
             "branch_name": "test-run-1760721361765",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 6,
             "y": 49.95,
             "commit_hash": "53f5f135aab30637c94c73b485e41feb538d9e1b",
             "branch_name": "test-run-1760721361767",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 7,
             "y": 49.7,
             "commit_hash": "2f3c34680ea7608c02efb282c47b776f93a36de0",
             "branch_name": "test-run-1760721361768",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 8,
             "y": 49.78333333333333,
             "commit_hash": "4e958a043a511c93a7b737cc48dfc66d930efa31",
             "branch_name": "test-run-1760721361769",
-            "status": "success"
+            "status": "early_fail"
           },
           {
             "x": 9,
             "y": 50.55,
             "commit_hash": "f6dabfd4a203410c9e4885a3969457275c1a39a7",
             "branch_name": "test-run-1760721361770",
-            "status": "success"
+            "status": "early_fail"
           }
         ],
         "borderColor": "#FF9800",
@@ -2318,52 +2318,52 @@
         {
           "commit_index": 0,
           "time_minutes": 50.25,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 1,
           "time_minutes": 53.31666666666667,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 2,
           "time_minutes": 50.516666666666666,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 3,
           "time_minutes": 50.68333333333333,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 4,
           "time_minutes": 49.78333333333333,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 5,
           "time_minutes": 50.0,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 6,
           "time_minutes": 49.95,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 7,
           "time_minutes": 49.7,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 8,
           "time_minutes": 49.78333333333333,
-          "status": "success"
+          "status": "early_fail"
         },
         {
           "commit_index": 9,
           "time_minutes": 50.55,
-          "status": "success"
+          "status": "early_fail"
         }
       ],
       "crytic/echidna": [

@@ -6,33 +6,43 @@ import yaml
 from collections import defaultdict
 from pathlib import Path
 
-def load_genuine_failures():
-    """Load the list of builds that should be treated as genuine failures from incorrect.yaml"""
+def load_failure_categories():
+    """Load the list of builds from different failure categories from incorrect.yaml"""
     failures_path = Path("incorrect.yaml")
     genuine_failures = set()
+    early_failures = set()
     
     if failures_path.exists():
         try:
             with open(failures_path, 'r') as f:
                 data = yaml.safe_load(f)
             
+            # Load genuine failures
             for entry in data.get('genuine_failures', []):
                 repo = entry['repo']
                 platform = entry['platform']
                 for commit_hash in entry['commits']:
                     genuine_failures.add((repo, platform, commit_hash))
+            
+            # Load early failures (failed on first error)
+            for entry in data.get('early_fail', []):
+                repo = entry['repo']
+                platform = entry['platform']
+                for commit_hash in entry['commits']:
+                    early_failures.add((repo, platform, commit_hash))
+                    
         except Exception as e:
             print(f"Warning: Could not load incorrect.yaml: {e}")
     
-    return genuine_failures
+    return genuine_failures, early_failures
 
 def parse_data():
     """Parse all JSON files and organize by repo and platform"""
     data_dir = Path("data")
     results = defaultdict(lambda: defaultdict(list))
     
-    # Load genuine failures
-    genuine_failures = load_genuine_failures()
+    # Load failure categories
+    genuine_failures, early_failures = load_failure_categories()
     
     for org_dir in data_dir.iterdir():
         if not org_dir.is_dir():
@@ -74,6 +84,9 @@ def parse_data():
                         if (repo_key, platform_name, commit_hash) in genuine_failures:
                             corrected_status = 'failure'
                             print(f"Marked as genuine failure: {repo_key}/{platform_name}/{commit_hash[:8]}")
+                        elif (repo_key, platform_name, commit_hash) in early_failures:
+                            corrected_status = 'early_fail'
+                            print(f"Marked as early failure: {repo_key}/{platform_name}/{commit_hash[:8]}")
                         elif original_status == 'timed_out':
                             # Keep timed_out status as is (separate from success/failure)
                             corrected_status = 'timed_out'
