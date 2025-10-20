@@ -75,7 +75,7 @@ async function loadData() {
 
         // Generate colors for all platforms
         platformColors = generatePlatformColors(allPlatforms);
-        
+
         // Initialize all platforms as enabled by default
         enabledPlatforms = new Set(allPlatforms);
 
@@ -250,6 +250,10 @@ function createSummaryChart() {
                     title: {
                         display: true,
                         text: 'CI Platform'
+                    },
+                    ticks: {
+                        maxRotation: 75,
+                        minRotation: 75
                     }
                 }
             }
@@ -378,11 +382,11 @@ function createPlatformLegend() {
         tag.className = 'platform-tag';
         tag.style.backgroundColor = getPlatformColor(platform);
         tag.textContent = getPlatformDisplayName(platform);
-        
+
         // Add visual feedback for checked/unchecked state
         tag.style.opacity = checkbox.checked ? '1' : '0.4';
         tag.style.border = checkbox.checked ? '2px solid transparent' : '2px solid #ccc';
-        
+
         // Add tooltip based on current state
         tag.setAttribute('data-tooltip', checkbox.checked ? 'Click to exclude from comparison' : 'Click to include in comparison');
 
@@ -398,22 +402,22 @@ function updatePlatformFilter(platform, enabled) {
     } else {
         enabledPlatforms.delete(platform);
     }
-    
+
     // Update the visual appearance of the platform tag
     const platformsContainer = document.getElementById('platforms');
     const labels = platformsContainer.getElementsByClassName('platform-checkbox');
-    
+
     Array.from(labels).forEach(label => {
         const checkbox = label.querySelector('input[type="checkbox"]');
         const tag = label.querySelector('.platform-tag');
-        
+
         if (tag.textContent === getPlatformDisplayName(platform)) {
             tag.style.opacity = enabled ? '1' : '0.4';
             tag.style.border = enabled ? '2px solid transparent' : '2px solid #ccc';
             tag.setAttribute('data-tooltip', enabled ? 'Click to exclude from comparison' : 'Click to include in comparison');
         }
     });
-    
+
     // Update the current chart to show/hide the platform
     if (currentTab >= 0) {
         createChart(allDatasets[currentTab], repoNames[currentTab]);
@@ -424,12 +428,12 @@ function updatePlatformLegendDisplay() {
     // Update the visual state of platform checkboxes to stay in sync
     const platformsContainer = document.getElementById('platforms');
     const labels = platformsContainer.getElementsByClassName('platform-checkbox');
-    
+
     Array.from(labels).forEach(label => {
         const checkbox = label.querySelector('input[type="checkbox"]');
         const tag = label.querySelector('.platform-tag');
         const platformDisplayName = tag.textContent;
-        
+
         // Find the original platform name
         const platform = allPlatforms.find(p => getPlatformDisplayName(p) === platformDisplayName);
         if (platform) {
@@ -552,7 +556,7 @@ function calculateStats(datasets) {
                 // Check if any builds timed out (assuming 120 minutes = 2 hours timeout)
                 const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
                 const hasTimedOut = timedOutCount > 0;
-                
+
                 // Check if any builds are early_fail
                 const earlyFailCount = dataset.data.filter(d => d.status === 'early_fail').length;
                 const hasEarlyFail = earlyFailCount > 0;
@@ -656,7 +660,7 @@ function calculateStats(datasets) {
             // Check for timed out builds in projected method
             const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
             const hasTimedOut = timedOutCount > 0;
-            
+
             // Check if any builds are early_fail
             const earlyFailCount = dataset.data.filter(d => d.status === 'early_fail').length;
             const hasEarlyFail = earlyFailCount > 0;
@@ -697,7 +701,7 @@ function createChart(datasets, repoName) {
         if (!enabledPlatforms.has(dataset.label)) {
             return;
         }
-        
+
         // Create main dataset with all builds (success + timed_out + early_fail) in one continuous line
         if (dataset.data.length > 0) {
             chartDatasets.push({
@@ -811,7 +815,7 @@ function createChart(datasets, repoName) {
             }
         }
     });
-    
+
     // Create custom legend with tooltips
     createCustomLegend(chartDatasets);
 }
@@ -827,35 +831,35 @@ function createCustomLegend(datasets) {
         legendContainer.style.justifyContent = 'center';
         legendContainer.style.gap = '15px';
         legendContainer.style.marginBottom = '20px';
-        
+
         // Insert before the chart
         const chartContainer = document.querySelector('.chart-container');
         chartContainer.parentNode.insertBefore(legendContainer, chartContainer);
     }
-    
+
     // Clear existing legend
     legendContainer.innerHTML = '';
-    
+
     // Get unique platforms from the datasets
     const platformsInChart = new Set();
     datasets.forEach(dataset => {
         const platformName = dataset.label.replace(/ \(failed\)$/, '').replace(/ \(timed out\)$/, '');
         platformsInChart.add(platformName);
     });
-    
+
     // Create legend items
     allPlatforms.forEach(platform => {
         if (!platformsInChart.has(platform)) return; // Skip platforms not in current chart
-        
+
         const isEnabled = enabledPlatforms.has(platform);
-        
+
         const legendItem = document.createElement('div');
         legendItem.style.display = 'flex';
         legendItem.style.alignItems = 'center';
         legendItem.style.cursor = 'pointer';
         legendItem.style.opacity = isEnabled ? '1' : '0.4';
         legendItem.setAttribute('data-tooltip', isEnabled ? 'Click to exclude from comparison' : 'Click to include in comparison');
-        
+
         // Color box
         const colorBox = document.createElement('div');
         colorBox.style.width = '12px';
@@ -863,20 +867,20 @@ function createCustomLegend(datasets) {
         colorBox.style.backgroundColor = getPlatformColor(platform);
         colorBox.style.marginRight = '8px';
         colorBox.style.borderRadius = '2px';
-        
+
         // Label text
         const labelText = document.createElement('span');
         labelText.textContent = getPlatformDisplayName(platform);
         labelText.style.fontSize = '14px';
         labelText.style.color = '#666';
-        
+
         // Click handler
         legendItem.onclick = () => {
             updatePlatformFilter(platform, !isEnabled);
             // Recreate the legend to update tooltips
             createCustomLegend(datasets);
         };
-        
+
         legendItem.appendChild(colorBox);
         legendItem.appendChild(labelText);
         legendContainer.appendChild(legendItem);
@@ -893,18 +897,18 @@ function updateStats(datasets) {
         if (!enabledPlatforms.has(platform)) {
             return;
         }
-        
+
         const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
 
         // Determine prefix, asterisk and tooltip text
         let prefix = '';
         let asterisk = '';
         let tooltipText = '';
-        
+
         if (stat.hasEarlyFail || stat.hasTimedOut) {
             prefix = '>';
         }
-        
+
         if (stat.isProjected && stat.hasTimedOut && stat.hasEarlyFail) {
             asterisk = '**';
             tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some or all of these builds took longer than 2 hours to complete, and were clipped at 2 hours. Some or all of these runs failed on first error, and so did not do everything other runs did.`;
@@ -955,7 +959,7 @@ function updateChart() {
             if (!enabledPlatforms.has(dataset.label)) {
                 return;
             }
-            
+
             // Create main dataset with all builds (success + timed_out) in one continuous line
             if (dataset.data.length > 0) {
                 chartDatasets.push({
