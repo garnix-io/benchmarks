@@ -143,13 +143,14 @@
         This is for two reasons</p>
 
         <ul>
+            <li>The first commit is susceptible to various influences: in
+                particular, with any CI that has a cache, to whether related
+                builds were <i>ever</i> added to the cache. It's also, for
+                setups with a cache, on average much slower than others.
+            </li>
             <li>For your average project, there will be <i>many more commits</i>
             than just ten. Letting the first commit contribute so much to
             the average would therefore be unrepresentative. </li>
-            <li>The first commit is susceptible to various influences: in
-                particular, with any CI that has a cache, to whether related
-                builds were <i>ever</i> added to the cache.
-            </li>
         </ul>
 
         <div id="dashboard" style="display: none;">
