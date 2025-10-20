@@ -89,11 +89,19 @@ export const mkBenchmarkStrategy = (args: {
       );
       pushedBranch = true;
       console.log("Checking timings...");
-      const timings = await getCheckTimings({
+      // Not actually sure which CIs time out at 2 hours already, but waiting
+      // for longer than that will make running this impossible.
+      const timeout : Promise<{time: number, status: "timed_out"}> = new Promise((resolve, _reject) => {
+        const twoHours = 2 * 60 * 60 * 1000
+        setTimeout(() => {
+          resolve({time: twoHours, status: "timed_out" });
+        }, twoHours);
+      });
+      const timings = await Promise.race([getCheckTimings({
         repo: args.pushRepo,
         commit: updatedSha,
         waitFor,
-      });
+      }), timeout]);
       await args.teardown?.();
       return { ...timings, branchName };
     } catch (err) {
@@ -169,6 +177,12 @@ export const writeNixGithubActionsYml = (
   writeYml(cwd, ".github/workflows/nix.yml", {
     name: "Nix on github",
     on: { push: {} },
+    // nix-quick-install-action sets accept-flake-config to true. We have to
+    // override that since some repos set their own cache as substituter, and
+    // because they run before we do, everything will already be in the cache.
+    env: {
+        NIX_CONFIG: 'accept-flake-config = false'
+    },
     jobs: mapValues(
       (steps) => ({
         "runs-on": "ubuntu-latest",

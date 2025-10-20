@@ -1,0 +1,2530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI Performance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .tab {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab:hover {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        /* Filter Controls */
+        .filters {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            user-select: none;
+        }
+        .filter-checkbox input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .filter-checkbox:hover {
+            color: #007bff;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-bottom: 30px;
+        }
+        
+        /* Statistics */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: help;
+        }
+        .stat-card[title]:hover {
+            background: #e9ecef;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Platform Legend */
+        .platforms {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .platform-tag {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CI Performance Dashboard</h1>
+        <div class="subtitle">Interactive visualizations of CI build times across different platforms</div>
+        
+        <!-- Tab Navigation -->
+        <div class="tabs" id="tabs">
+            <button class="tab active" onclick="showTab(0)">Effect-TS/effect</button>
+<button class="tab" onclick="showTab(1)">agda/agda</button>
+<button class="tab" onclick="showTab(2)">coder/code-server</button>
+<button class="tab" onclick="showTab(3)">crytic/echidna</button>
+        </div>
+        
+        <!-- Filter Controls -->
+        <div class="filters">
+            <label class="filter-checkbox">
+                <input type="checkbox" id="includeFirst" checked onchange="updateChart()">
+                <span class="checkmark"></span>
+                Include first commit
+            </label>
+            <label class="filter-checkbox">
+                <input type="checkbox" id="includeOthers" checked onchange="updateChart()">
+                <span class="checkmark"></span>
+                Include other commits
+            </label>
+        </div>
+        
+        <!-- Chart Container -->
+        <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+        </div>
+        
+        <!-- Statistics Container -->
+        <div class="stats" id="stats">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+        
+        <!-- Platform Legend -->
+        <div class="platforms">
+            <div class="platform-tag" style="background-color: #4CAF50;">Garnix</div>
+            <div class="platform-tag" style="background-color: #2196F3;">GitHub Actions (Parallel)</div>
+            <div class="platform-tag" style="background-color: #FF9800;">GitHub Actions (Serial)</div>
+            <div class="platform-tag" style="background-color: #9C27B0;">GitHub Actions + Cachix (Parallel)</div>
+            <div class="platform-tag" style="background-color: #F44336;">GitHub Actions + Cachix (Serial)</div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const repoNames = ["Effect-TS/effect", "agda/agda", "coder/code-server", "crytic/echidna"];
+        const allDatasets = [
+  [
+    {
+      "label": "github-actions-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.75,
+          "commit_hash": "109aa6adb648e5040e9057e4c8bc896097ab96ea",
+          "branch_name": "main"
+        },
+        {
+          "x": 1,
+          "y": 0.6333333333333333,
+          "commit_hash": "0e619913e504ec7d8733e7880e28d66900a7ccd3",
+          "branch_name": "main"
+        },
+        {
+          "x": 2,
+          "y": 0.5333333333333333,
+          "commit_hash": "6978c0789e97eb1595f335454321923e336be63f",
+          "branch_name": "main"
+        },
+        {
+          "x": 3,
+          "y": 0.6,
+          "commit_hash": "d5a19499aac7c1d147674a35ac69992177c7536c",
+          "branch_name": "main"
+        },
+        {
+          "x": 4,
+          "y": 0.7166666666666667,
+          "commit_hash": "4c90c54d87c91f75f3ad114926cdf3b0c25df091",
+          "branch_name": "main"
+        },
+        {
+          "x": 5,
+          "y": 0.6166666666666667,
+          "commit_hash": "d3d3bda74c794153def9027e0c40896e72cd5d14",
+          "branch_name": "main"
+        },
+        {
+          "x": 6,
+          "y": 0.5833333333333334,
+          "commit_hash": "55a9d68f0b6066624a917fa76b91a93fb7f26e75",
+          "branch_name": "main"
+        },
+        {
+          "x": 7,
+          "y": 0.5833333333333334,
+          "commit_hash": "6318090b7c3c9a5cd3b23337aefb63cb3f2ca957",
+          "branch_name": "main"
+        },
+        {
+          "x": 8,
+          "y": 0.7166666666666667,
+          "commit_hash": "7b2f8743d96753c3e24ac4cc6715a4a7f4a2ca0c",
+          "branch_name": "main"
+        },
+        {
+          "x": 9,
+          "y": 0.6166666666666667,
+          "commit_hash": "a904a739459bfd0fa7844b00b902d2fa984fb014",
+          "branch_name": "main"
+        },
+        {
+          "x": 10,
+          "y": 0.5666666666666667,
+          "commit_hash": "92c0322a58bf7e5b8dbb602186030839e89df5af",
+          "branch_name": "main"
+        },
+        {
+          "x": 11,
+          "y": 0.7,
+          "commit_hash": "fc444d780a03154e855452b491d7dcae2cba4973",
+          "branch_name": "main"
+        },
+        {
+          "x": 12,
+          "y": 0.7833333333333333,
+          "commit_hash": "d626c28bcbbedbc2670ecaac2bf13458f48071e0",
+          "branch_name": "main"
+        },
+        {
+          "x": 13,
+          "y": 0.5666666666666667,
+          "commit_hash": "c4b84f724ae809f3450d71c3ea5d629205fc479f",
+          "branch_name": "main"
+        },
+        {
+          "x": 14,
+          "y": 0.7333333333333333,
+          "commit_hash": "d389a7801f42cceee2296b7f563e97d69a41b554",
+          "branch_name": "main"
+        },
+        {
+          "x": 15,
+          "y": 0.6666666666666666,
+          "commit_hash": "87f7ef28a3c27e2e4f2fcfa465f85bb2a45a3d6b",
+          "branch_name": "main"
+        },
+        {
+          "x": 16,
+          "y": 0.5833333333333334,
+          "commit_hash": "210d27e999e066ea9b907301150c65f9ff080b39",
+          "branch_name": "main"
+        },
+        {
+          "x": 17,
+          "y": 0.6833333333333333,
+          "commit_hash": "5b46e996d30e2497eb23095e2c21eee04438edf5",
+          "branch_name": "main"
+        },
+        {
+          "x": 18,
+          "y": 0.7,
+          "commit_hash": "1d3a06bb58ad1ac123ae8f9d42b4345f9c9c53c0",
+          "branch_name": "main"
+        },
+        {
+          "x": 19,
+          "y": 0.6666666666666666,
+          "commit_hash": "2198fa46bf4b76c2eb2aa44df234467d77f31ac4",
+          "branch_name": "main"
+        }
+      ],
+      "borderColor": "#2196F3",
+      "backgroundColor": "#2196F320",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 1.9666666666666666,
+          "commit_hash": "109aa6adb648e5040e9057e4c8bc896097ab96ea",
+          "branch_name": "main"
+        },
+        {
+          "x": 1,
+          "y": 0.75,
+          "commit_hash": "0e619913e504ec7d8733e7880e28d66900a7ccd3",
+          "branch_name": "main"
+        },
+        {
+          "x": 2,
+          "y": 0.85,
+          "commit_hash": "6978c0789e97eb1595f335454321923e336be63f",
+          "branch_name": "main"
+        },
+        {
+          "x": 3,
+          "y": 0.85,
+          "commit_hash": "d5a19499aac7c1d147674a35ac69992177c7536c",
+          "branch_name": "main"
+        },
+        {
+          "x": 4,
+          "y": 0.75,
+          "commit_hash": "4c90c54d87c91f75f3ad114926cdf3b0c25df091",
+          "branch_name": "main"
+        },
+        {
+          "x": 5,
+          "y": 0.7666666666666667,
+          "commit_hash": "d3d3bda74c794153def9027e0c40896e72cd5d14",
+          "branch_name": "main"
+        },
+        {
+          "x": 6,
+          "y": 0.7333333333333333,
+          "commit_hash": "55a9d68f0b6066624a917fa76b91a93fb7f26e75",
+          "branch_name": "main"
+        },
+        {
+          "x": 7,
+          "y": 0.8833333333333333,
+          "commit_hash": "6318090b7c3c9a5cd3b23337aefb63cb3f2ca957",
+          "branch_name": "main"
+        },
+        {
+          "x": 8,
+          "y": 0.8166666666666667,
+          "commit_hash": "7b2f8743d96753c3e24ac4cc6715a4a7f4a2ca0c",
+          "branch_name": "main"
+        },
+        {
+          "x": 9,
+          "y": 0.8833333333333333,
+          "commit_hash": "a904a739459bfd0fa7844b00b902d2fa984fb014",
+          "branch_name": "main"
+        },
+        {
+          "x": 10,
+          "y": 0.75,
+          "commit_hash": "92c0322a58bf7e5b8dbb602186030839e89df5af",
+          "branch_name": "main"
+        },
+        {
+          "x": 11,
+          "y": 0.95,
+          "commit_hash": "fc444d780a03154e855452b491d7dcae2cba4973",
+          "branch_name": "main"
+        },
+        {
+          "x": 12,
+          "y": 0.7333333333333333,
+          "commit_hash": "d626c28bcbbedbc2670ecaac2bf13458f48071e0",
+          "branch_name": "main"
+        },
+        {
+          "x": 13,
+          "y": 0.75,
+          "commit_hash": "c4b84f724ae809f3450d71c3ea5d629205fc479f",
+          "branch_name": "main"
+        },
+        {
+          "x": 14,
+          "y": 0.7666666666666667,
+          "commit_hash": "d389a7801f42cceee2296b7f563e97d69a41b554",
+          "branch_name": "main"
+        },
+        {
+          "x": 15,
+          "y": 0.9,
+          "commit_hash": "87f7ef28a3c27e2e4f2fcfa465f85bb2a45a3d6b",
+          "branch_name": "main"
+        },
+        {
+          "x": 16,
+          "y": 0.75,
+          "commit_hash": "210d27e999e066ea9b907301150c65f9ff080b39",
+          "branch_name": "main"
+        },
+        {
+          "x": 17,
+          "y": 0.85,
+          "commit_hash": "5b46e996d30e2497eb23095e2c21eee04438edf5",
+          "branch_name": "main"
+        },
+        {
+          "x": 18,
+          "y": 0.9666666666666667,
+          "commit_hash": "1d3a06bb58ad1ac123ae8f9d42b4345f9c9c53c0",
+          "branch_name": "main"
+        },
+        {
+          "x": 19,
+          "y": 0.75,
+          "commit_hash": "2198fa46bf4b76c2eb2aa44df234467d77f31ac4",
+          "branch_name": "main"
+        }
+      ],
+      "borderColor": "#F44336",
+      "backgroundColor": "#F4433620",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.9666666666666667,
+          "commit_hash": "109aa6adb648e5040e9057e4c8bc896097ab96ea",
+          "branch_name": "test-run-1704853257945"
+        },
+        {
+          "x": 1,
+          "y": 0.85,
+          "commit_hash": "0e619913e504ec7d8733e7880e28d66900a7ccd3",
+          "branch_name": "test-run-1704853257946"
+        },
+        {
+          "x": 2,
+          "y": 0.7333333333333333,
+          "commit_hash": "6978c0789e97eb1595f335454321923e336be63f",
+          "branch_name": "test-run-1704853257947"
+        },
+        {
+          "x": 3,
+          "y": 0.8,
+          "commit_hash": "d5a19499aac7c1d147674a35ac69992177c7536c",
+          "branch_name": "test-run-1704853257948"
+        },
+        {
+          "x": 4,
+          "y": 0.8,
+          "commit_hash": "4c90c54d87c91f75f3ad114926cdf3b0c25df091",
+          "branch_name": "test-run-1704853257949"
+        },
+        {
+          "x": 5,
+          "y": 0.8166666666666667,
+          "commit_hash": "d3d3bda74c794153def9027e0c40896e72cd5d14",
+          "branch_name": "test-run-1704853257950"
+        },
+        {
+          "x": 6,
+          "y": 0.7166666666666667,
+          "commit_hash": "55a9d68f0b6066624a917fa76b91a93fb7f26e75",
+          "branch_name": "test-run-1704853257951"
+        },
+        {
+          "x": 7,
+          "y": 0.7333333333333333,
+          "commit_hash": "6318090b7c3c9a5cd3b23337aefb63cb3f2ca957",
+          "branch_name": "test-run-1704853257952"
+        },
+        {
+          "x": 8,
+          "y": 0.85,
+          "commit_hash": "7b2f8743d96753c3e24ac4cc6715a4a7f4a2ca0c",
+          "branch_name": "test-run-1704853257953"
+        },
+        {
+          "x": 9,
+          "y": 0.8,
+          "commit_hash": "a904a739459bfd0fa7844b00b902d2fa984fb014",
+          "branch_name": "test-run-1704853257954"
+        },
+        {
+          "x": 10,
+          "y": 0.7166666666666667,
+          "commit_hash": "92c0322a58bf7e5b8dbb602186030839e89df5af",
+          "branch_name": "test-run-1704853257955"
+        },
+        {
+          "x": 11,
+          "y": 0.7666666666666667,
+          "commit_hash": "fc444d780a03154e855452b491d7dcae2cba4973",
+          "branch_name": "test-run-1704853257956"
+        },
+        {
+          "x": 12,
+          "y": 0.7833333333333333,
+          "commit_hash": "d626c28bcbbedbc2670ecaac2bf13458f48071e0",
+          "branch_name": "test-run-1704853257957"
+        },
+        {
+          "x": 13,
+          "y": 0.7666666666666667,
+          "commit_hash": "c4b84f724ae809f3450d71c3ea5d629205fc479f",
+          "branch_name": "test-run-1704853257958"
+        },
+        {
+          "x": 14,
+          "y": 0.7833333333333333,
+          "commit_hash": "d389a7801f42cceee2296b7f563e97d69a41b554",
+          "branch_name": "test-run-1704853257959"
+        },
+        {
+          "x": 15,
+          "y": 0.9666666666666667,
+          "commit_hash": "87f7ef28a3c27e2e4f2fcfa465f85bb2a45a3d6b",
+          "branch_name": "test-run-1704853257960"
+        },
+        {
+          "x": 16,
+          "y": 0.7166666666666667,
+          "commit_hash": "210d27e999e066ea9b907301150c65f9ff080b39",
+          "branch_name": "test-run-1704853257961"
+        },
+        {
+          "x": 17,
+          "y": 0.7166666666666667,
+          "commit_hash": "5b46e996d30e2497eb23095e2c21eee04438edf5",
+          "branch_name": "test-run-1704853257962"
+        },
+        {
+          "x": 18,
+          "y": 0.7666666666666667,
+          "commit_hash": "1d3a06bb58ad1ac123ae8f9d42b4345f9c9c53c0",
+          "branch_name": "test-run-1704853257963"
+        },
+        {
+          "x": 19,
+          "y": 0.7666666666666667,
+          "commit_hash": "2198fa46bf4b76c2eb2aa44df234467d77f31ac4",
+          "branch_name": "test-run-1704853257964"
+        }
+      ],
+      "borderColor": "#9C27B0",
+      "backgroundColor": "#9C27B020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "garnix",
+      "data": [
+        {
+          "x": 0,
+          "y": 1.7166666666666666,
+          "commit_hash": "109aa6adb648e5040e9057e4c8bc896097ab96ea",
+          "branch_name": "main"
+        },
+        {
+          "x": 1,
+          "y": 0.31666666666666665,
+          "commit_hash": "0e619913e504ec7d8733e7880e28d66900a7ccd3",
+          "branch_name": "main"
+        },
+        {
+          "x": 2,
+          "y": 0.26666666666666666,
+          "commit_hash": "6978c0789e97eb1595f335454321923e336be63f",
+          "branch_name": "main"
+        },
+        {
+          "x": 3,
+          "y": 0.6166666666666667,
+          "commit_hash": "d5a19499aac7c1d147674a35ac69992177c7536c",
+          "branch_name": "main"
+        },
+        {
+          "x": 4,
+          "y": 0.3,
+          "commit_hash": "4c90c54d87c91f75f3ad114926cdf3b0c25df091",
+          "branch_name": "main"
+        },
+        {
+          "x": 5,
+          "y": 0.2833333333333333,
+          "commit_hash": "d3d3bda74c794153def9027e0c40896e72cd5d14",
+          "branch_name": "main"
+        },
+        {
+          "x": 6,
+          "y": 0.3,
+          "commit_hash": "55a9d68f0b6066624a917fa76b91a93fb7f26e75",
+          "branch_name": "main"
+        },
+        {
+          "x": 7,
+          "y": 0.43333333333333335,
+          "commit_hash": "6318090b7c3c9a5cd3b23337aefb63cb3f2ca957",
+          "branch_name": "main"
+        },
+        {
+          "x": 8,
+          "y": 0.31666666666666665,
+          "commit_hash": "7b2f8743d96753c3e24ac4cc6715a4a7f4a2ca0c",
+          "branch_name": "main"
+        },
+        {
+          "x": 9,
+          "y": 0.2833333333333333,
+          "commit_hash": "a904a739459bfd0fa7844b00b902d2fa984fb014",
+          "branch_name": "main"
+        },
+        {
+          "x": 10,
+          "y": 0.95,
+          "commit_hash": "92c0322a58bf7e5b8dbb602186030839e89df5af",
+          "branch_name": "main"
+        },
+        {
+          "x": 11,
+          "y": 0.65,
+          "commit_hash": "fc444d780a03154e855452b491d7dcae2cba4973",
+          "branch_name": "main"
+        },
+        {
+          "x": 12,
+          "y": 0.5833333333333334,
+          "commit_hash": "d626c28bcbbedbc2670ecaac2bf13458f48071e0",
+          "branch_name": "main"
+        },
+        {
+          "x": 13,
+          "y": 0.35,
+          "commit_hash": "c4b84f724ae809f3450d71c3ea5d629205fc479f",
+          "branch_name": "main"
+        },
+        {
+          "x": 14,
+          "y": 0.3333333333333333,
+          "commit_hash": "d389a7801f42cceee2296b7f563e97d69a41b554",
+          "branch_name": "main"
+        },
+        {
+          "x": 15,
+          "y": 0.31666666666666665,
+          "commit_hash": "87f7ef28a3c27e2e4f2fcfa465f85bb2a45a3d6b",
+          "branch_name": "main"
+        },
+        {
+          "x": 16,
+          "y": 0.2833333333333333,
+          "commit_hash": "210d27e999e066ea9b907301150c65f9ff080b39",
+          "branch_name": "main"
+        },
+        {
+          "x": 17,
+          "y": 0.2833333333333333,
+          "commit_hash": "5b46e996d30e2497eb23095e2c21eee04438edf5",
+          "branch_name": "main"
+        },
+        {
+          "x": 18,
+          "y": 0.2833333333333333,
+          "commit_hash": "1d3a06bb58ad1ac123ae8f9d42b4345f9c9c53c0",
+          "branch_name": "main"
+        },
+        {
+          "x": 19,
+          "y": 0.2833333333333333,
+          "commit_hash": "2198fa46bf4b76c2eb2aa44df234467d77f31ac4",
+          "branch_name": "main"
+        }
+      ],
+      "borderColor": "#4CAF50",
+      "backgroundColor": "#4CAF5020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.7,
+          "commit_hash": "109aa6adb648e5040e9057e4c8bc896097ab96ea",
+          "branch_name": "main"
+        },
+        {
+          "x": 1,
+          "y": 0.6333333333333333,
+          "commit_hash": "0e619913e504ec7d8733e7880e28d66900a7ccd3",
+          "branch_name": "main"
+        },
+        {
+          "x": 2,
+          "y": 0.6833333333333333,
+          "commit_hash": "6978c0789e97eb1595f335454321923e336be63f",
+          "branch_name": "main"
+        },
+        {
+          "x": 3,
+          "y": 0.6666666666666666,
+          "commit_hash": "d5a19499aac7c1d147674a35ac69992177c7536c",
+          "branch_name": "main"
+        },
+        {
+          "x": 4,
+          "y": 0.6333333333333333,
+          "commit_hash": "4c90c54d87c91f75f3ad114926cdf3b0c25df091",
+          "branch_name": "main"
+        },
+        {
+          "x": 5,
+          "y": 0.7666666666666667,
+          "commit_hash": "d3d3bda74c794153def9027e0c40896e72cd5d14",
+          "branch_name": "main"
+        },
+        {
+          "x": 6,
+          "y": 0.6,
+          "commit_hash": "55a9d68f0b6066624a917fa76b91a93fb7f26e75",
+          "branch_name": "main"
+        },
+        {
+          "x": 7,
+          "y": 0.65,
+          "commit_hash": "6318090b7c3c9a5cd3b23337aefb63cb3f2ca957",
+          "branch_name": "main"
+        },
+        {
+          "x": 8,
+          "y": 0.75,
+          "commit_hash": "7b2f8743d96753c3e24ac4cc6715a4a7f4a2ca0c",
+          "branch_name": "main"
+        },
+        {
+          "x": 9,
+          "y": 0.7333333333333333,
+          "commit_hash": "a904a739459bfd0fa7844b00b902d2fa984fb014",
+          "branch_name": "main"
+        },
+        {
+          "x": 10,
+          "y": 0.7166666666666667,
+          "commit_hash": "92c0322a58bf7e5b8dbb602186030839e89df5af",
+          "branch_name": "main"
+        },
+        {
+          "x": 11,
+          "y": 0.55,
+          "commit_hash": "fc444d780a03154e855452b491d7dcae2cba4973",
+          "branch_name": "main"
+        },
+        {
+          "x": 12,
+          "y": 0.55,
+          "commit_hash": "d626c28bcbbedbc2670ecaac2bf13458f48071e0",
+          "branch_name": "main"
+        },
+        {
+          "x": 13,
+          "y": 0.5833333333333334,
+          "commit_hash": "c4b84f724ae809f3450d71c3ea5d629205fc479f",
+          "branch_name": "main"
+        },
+        {
+          "x": 14,
+          "y": 0.5666666666666667,
+          "commit_hash": "d389a7801f42cceee2296b7f563e97d69a41b554",
+          "branch_name": "main"
+        },
+        {
+          "x": 15,
+          "y": 0.7333333333333333,
+          "commit_hash": "87f7ef28a3c27e2e4f2fcfa465f85bb2a45a3d6b",
+          "branch_name": "main"
+        },
+        {
+          "x": 16,
+          "y": 0.6166666666666667,
+          "commit_hash": "210d27e999e066ea9b907301150c65f9ff080b39",
+          "branch_name": "main"
+        },
+        {
+          "x": 17,
+          "y": 0.6166666666666667,
+          "commit_hash": "5b46e996d30e2497eb23095e2c21eee04438edf5",
+          "branch_name": "main"
+        },
+        {
+          "x": 18,
+          "y": 0.7666666666666667,
+          "commit_hash": "1d3a06bb58ad1ac123ae8f9d42b4345f9c9c53c0",
+          "branch_name": "main"
+        },
+        {
+          "x": 19,
+          "y": 0.5666666666666667,
+          "commit_hash": "2198fa46bf4b76c2eb2aa44df234467d77f31ac4",
+          "branch_name": "main"
+        }
+      ],
+      "borderColor": "#FF9800",
+      "backgroundColor": "#FF980020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    }
+  ],
+  [
+    {
+      "label": "github-actions-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 30.083333333333332,
+          "commit_hash": "646a28e9a8e2b9d201a06c52e205e004d54724db",
+          "branch_name": "test-run-1704857811343"
+        },
+        {
+          "x": 1,
+          "y": 39.38333333333333,
+          "commit_hash": "f0a4b483c464574aa8207f97b458fdf2c87c25df",
+          "branch_name": "test-run-1704857811348"
+        },
+        {
+          "x": 2,
+          "y": 28.466666666666665,
+          "commit_hash": "095088b5bc1866c5ab8fb004eff6a56d49c0a381",
+          "branch_name": "test-run-1704857811355"
+        },
+        {
+          "x": 3,
+          "y": 29.433333333333334,
+          "commit_hash": "ac28b21f0378c1f5a82af66706a7be8486675166",
+          "branch_name": "test-run-1704857811361"
+        },
+        {
+          "x": 4,
+          "y": 34.583333333333336,
+          "commit_hash": "82c19372d78133e386467b4ad92f4cb13dcc058d",
+          "branch_name": "test-run-1704857811367"
+        },
+        {
+          "x": 5,
+          "y": 39.28333333333333,
+          "commit_hash": "2a0a3dadb0603d488b4076f5cdb75297f45802bd",
+          "branch_name": "test-run-1704857811374"
+        },
+        {
+          "x": 6,
+          "y": 27.783333333333335,
+          "commit_hash": "02eb3a997f5c5123e5def6c49d6b445f9449a748",
+          "branch_name": "test-run-1704857811380"
+        },
+        {
+          "x": 7,
+          "y": 34.31666666666667,
+          "commit_hash": "8cf0bae64afb21e492efe1f1ad9eb1d898c14b91",
+          "branch_name": "test-run-1704857811386"
+        },
+        {
+          "x": 8,
+          "y": 28.3,
+          "commit_hash": "de7f50310ea722491f0d422434c6f0c077fa0e7f",
+          "branch_name": "test-run-1704857811395"
+        },
+        {
+          "x": 9,
+          "y": 33.3,
+          "commit_hash": "ee876ee229cdc2f3b1ff80f6d60568a1869f9385",
+          "branch_name": "test-run-1704857811397"
+        },
+        {
+          "x": 10,
+          "y": 34.483333333333334,
+          "commit_hash": "fe4337982fc3a097ab6ee27554caefdcf934f281",
+          "branch_name": "test-run-1704857811402"
+        },
+        {
+          "x": 11,
+          "y": 31.533333333333335,
+          "commit_hash": "ea16c4cf0833afa2b2386260928b804d7f471112",
+          "branch_name": "test-run-1704857811407"
+        },
+        {
+          "x": 12,
+          "y": 27.866666666666667,
+          "commit_hash": "5d25cf8ef920310341a782b11bb51ad7462a2902",
+          "branch_name": "test-run-1704857811411"
+        },
+        {
+          "x": 13,
+          "y": 20.766666666666666,
+          "commit_hash": "6986b28b40adc41888de59736207303862859c22",
+          "branch_name": "test-run-1704857811414"
+        },
+        {
+          "x": 14,
+          "y": 25.683333333333334,
+          "commit_hash": "5e47be63595e70eb901a477b2c18adca8df5b419",
+          "branch_name": "test-run-1704857811418"
+        },
+        {
+          "x": 15,
+          "y": 27.166666666666668,
+          "commit_hash": "01f12f05b2f1c617cefc005933a632bcedb2d703",
+          "branch_name": "test-run-1704857811421"
+        },
+        {
+          "x": 16,
+          "y": 20.316666666666666,
+          "commit_hash": "6c28d45260d3d1655f12f374f61f563c87c98344",
+          "branch_name": "test-run-1704857811426"
+        },
+        {
+          "x": 17,
+          "y": 27.983333333333334,
+          "commit_hash": "57e4bad0a324be68384d9ea1ff1dc1b1797e7726",
+          "branch_name": "test-run-1704857811430"
+        },
+        {
+          "x": 18,
+          "y": 24.85,
+          "commit_hash": "f515556dab7f4686544f953d0f9d52ef8ac5de94",
+          "branch_name": "test-run-1704857811434"
+        },
+        {
+          "x": 19,
+          "y": 24.8,
+          "commit_hash": "561fdc2f87e732cc8ea8c3a2223041efef3a63d3",
+          "branch_name": "test-run-1704857811438"
+        }
+      ],
+      "borderColor": "#2196F3",
+      "backgroundColor": "#2196F320",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 32.13333333333333,
+          "commit_hash": "646a28e9a8e2b9d201a06c52e205e004d54724db",
+          "branch_name": "test-run-1704857811342"
+        },
+        {
+          "x": 1,
+          "y": 28.266666666666666,
+          "commit_hash": "f0a4b483c464574aa8207f97b458fdf2c87c25df",
+          "branch_name": "test-run-1704857811349"
+        },
+        {
+          "x": 2,
+          "y": 28.866666666666667,
+          "commit_hash": "095088b5bc1866c5ab8fb004eff6a56d49c0a381",
+          "branch_name": "test-run-1704857811354"
+        },
+        {
+          "x": 3,
+          "y": 35.36666666666667,
+          "commit_hash": "ac28b21f0378c1f5a82af66706a7be8486675166",
+          "branch_name": "test-run-1704857811359"
+        },
+        {
+          "x": 4,
+          "y": 34.45,
+          "commit_hash": "82c19372d78133e386467b4ad92f4cb13dcc058d",
+          "branch_name": "test-run-1704857811365"
+        },
+        {
+          "x": 5,
+          "y": 29.383333333333333,
+          "commit_hash": "2a0a3dadb0603d488b4076f5cdb75297f45802bd",
+          "branch_name": "test-run-1704857811372"
+        },
+        {
+          "x": 6,
+          "y": 33.06666666666667,
+          "commit_hash": "02eb3a997f5c5123e5def6c49d6b445f9449a748",
+          "branch_name": "test-run-1704857811376"
+        },
+        {
+          "x": 7,
+          "y": 38.833333333333336,
+          "commit_hash": "8cf0bae64afb21e492efe1f1ad9eb1d898c14b91",
+          "branch_name": "test-run-1704857811382"
+        },
+        {
+          "x": 8,
+          "y": 34.983333333333334,
+          "commit_hash": "de7f50310ea722491f0d422434c6f0c077fa0e7f",
+          "branch_name": "test-run-1704857811394"
+        },
+        {
+          "x": 9,
+          "y": 32.71666666666667,
+          "commit_hash": "ee876ee229cdc2f3b1ff80f6d60568a1869f9385",
+          "branch_name": "test-run-1704857811399"
+        },
+        {
+          "x": 10,
+          "y": 29.15,
+          "commit_hash": "fe4337982fc3a097ab6ee27554caefdcf934f281",
+          "branch_name": "test-run-1704857811403"
+        },
+        {
+          "x": 11,
+          "y": 32.083333333333336,
+          "commit_hash": "ea16c4cf0833afa2b2386260928b804d7f471112",
+          "branch_name": "test-run-1704857811406"
+        },
+        {
+          "x": 12,
+          "y": 28.616666666666667,
+          "commit_hash": "5d25cf8ef920310341a782b11bb51ad7462a2902",
+          "branch_name": "test-run-1704857811410"
+        },
+        {
+          "x": 13,
+          "y": 21.083333333333332,
+          "commit_hash": "6986b28b40adc41888de59736207303862859c22",
+          "branch_name": "test-run-1704857811413"
+        },
+        {
+          "x": 14,
+          "y": 30.95,
+          "commit_hash": "5e47be63595e70eb901a477b2c18adca8df5b419",
+          "branch_name": "test-run-1704857811417"
+        },
+        {
+          "x": 15,
+          "y": 20.683333333333334,
+          "commit_hash": "01f12f05b2f1c617cefc005933a632bcedb2d703",
+          "branch_name": "test-run-1704857811423"
+        },
+        {
+          "x": 16,
+          "y": 20.75,
+          "commit_hash": "6c28d45260d3d1655f12f374f61f563c87c98344",
+          "branch_name": "test-run-1704857811425"
+        },
+        {
+          "x": 17,
+          "y": 21.65,
+          "commit_hash": "57e4bad0a324be68384d9ea1ff1dc1b1797e7726",
+          "branch_name": "test-run-1704857811428"
+        },
+        {
+          "x": 18,
+          "y": 20.05,
+          "commit_hash": "f515556dab7f4686544f953d0f9d52ef8ac5de94",
+          "branch_name": "test-run-1704857811433"
+        },
+        {
+          "x": 19,
+          "y": 19.883333333333333,
+          "commit_hash": "561fdc2f87e732cc8ea8c3a2223041efef3a63d3",
+          "branch_name": "test-run-1704857811437"
+        }
+      ],
+      "borderColor": "#F44336",
+      "backgroundColor": "#F4433620",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 28.866666666666667,
+          "commit_hash": "646a28e9a8e2b9d201a06c52e205e004d54724db",
+          "branch_name": "test-run-1704857811344"
+        },
+        {
+          "x": 1,
+          "y": 28.683333333333334,
+          "commit_hash": "f0a4b483c464574aa8207f97b458fdf2c87c25df",
+          "branch_name": "test-run-1704857811347"
+        },
+        {
+          "x": 2,
+          "y": 34.083333333333336,
+          "commit_hash": "095088b5bc1866c5ab8fb004eff6a56d49c0a381",
+          "branch_name": "test-run-1704857811353"
+        },
+        {
+          "x": 3,
+          "y": 39.516666666666666,
+          "commit_hash": "ac28b21f0378c1f5a82af66706a7be8486675166",
+          "branch_name": "test-run-1704857811360"
+        },
+        {
+          "x": 4,
+          "y": 28.866666666666667,
+          "commit_hash": "82c19372d78133e386467b4ad92f4cb13dcc058d",
+          "branch_name": "test-run-1704857811368"
+        },
+        {
+          "x": 5,
+          "y": 32.55,
+          "commit_hash": "2a0a3dadb0603d488b4076f5cdb75297f45802bd",
+          "branch_name": "test-run-1704857811373"
+        },
+        {
+          "x": 6,
+          "y": 28.583333333333332,
+          "commit_hash": "02eb3a997f5c5123e5def6c49d6b445f9449a748",
+          "branch_name": "test-run-1704857811377"
+        },
+        {
+          "x": 7,
+          "y": 34.86666666666667,
+          "commit_hash": "8cf0bae64afb21e492efe1f1ad9eb1d898c14b91",
+          "branch_name": "test-run-1704857811383"
+        },
+        {
+          "x": 8,
+          "y": 35.483333333333334,
+          "commit_hash": "de7f50310ea722491f0d422434c6f0c077fa0e7f",
+          "branch_name": "test-run-1704857811393"
+        },
+        {
+          "x": 9,
+          "y": 29.133333333333333,
+          "commit_hash": "ee876ee229cdc2f3b1ff80f6d60568a1869f9385",
+          "branch_name": "test-run-1704857811398"
+        },
+        {
+          "x": 10,
+          "y": 32.88333333333333,
+          "commit_hash": "fe4337982fc3a097ab6ee27554caefdcf934f281",
+          "branch_name": "test-run-1704857811401"
+        },
+        {
+          "x": 11,
+          "y": 29.816666666666666,
+          "commit_hash": "ea16c4cf0833afa2b2386260928b804d7f471112",
+          "branch_name": "test-run-1704857811405"
+        },
+        {
+          "x": 12,
+          "y": 38.38333333333333,
+          "commit_hash": "5d25cf8ef920310341a782b11bb51ad7462a2902",
+          "branch_name": "test-run-1704857811409"
+        },
+        {
+          "x": 13,
+          "y": 24.15,
+          "commit_hash": "6986b28b40adc41888de59736207303862859c22",
+          "branch_name": "test-run-1704857811415"
+        },
+        {
+          "x": 14,
+          "y": 18.8,
+          "commit_hash": "5e47be63595e70eb901a477b2c18adca8df5b419",
+          "branch_name": "test-run-1704857811419"
+        },
+        {
+          "x": 15,
+          "y": 20.15,
+          "commit_hash": "01f12f05b2f1c617cefc005933a632bcedb2d703",
+          "branch_name": "test-run-1704857811420"
+        },
+        {
+          "x": 16,
+          "y": 26.466666666666665,
+          "commit_hash": "6c28d45260d3d1655f12f374f61f563c87c98344",
+          "branch_name": "test-run-1704857811424"
+        },
+        {
+          "x": 17,
+          "y": 18.7,
+          "commit_hash": "57e4bad0a324be68384d9ea1ff1dc1b1797e7726",
+          "branch_name": "test-run-1704857811429"
+        },
+        {
+          "x": 18,
+          "y": 19.4,
+          "commit_hash": "f515556dab7f4686544f953d0f9d52ef8ac5de94",
+          "branch_name": "test-run-1704857811432"
+        },
+        {
+          "x": 19,
+          "y": 19.3,
+          "commit_hash": "561fdc2f87e732cc8ea8c3a2223041efef3a63d3",
+          "branch_name": "test-run-1704857811435"
+        }
+      ],
+      "borderColor": "#9C27B0",
+      "backgroundColor": "#9C27B020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "garnix",
+      "data": [
+        {
+          "x": 0,
+          "y": 14.933333333333334,
+          "commit_hash": "646a28e9a8e2b9d201a06c52e205e004d54724db",
+          "branch_name": "test-run-1704857811341"
+        },
+        {
+          "x": 1,
+          "y": 13.783333333333333,
+          "commit_hash": "f0a4b483c464574aa8207f97b458fdf2c87c25df",
+          "branch_name": "test-run-1704857811345"
+        },
+        {
+          "x": 2,
+          "y": 13.55,
+          "commit_hash": "095088b5bc1866c5ab8fb004eff6a56d49c0a381",
+          "branch_name": "test-run-1704857811346"
+        },
+        {
+          "x": 3,
+          "y": 13.933333333333334,
+          "commit_hash": "ac28b21f0378c1f5a82af66706a7be8486675166",
+          "branch_name": "test-run-1704857811350"
+        },
+        {
+          "x": 4,
+          "y": 14.133333333333333,
+          "commit_hash": "82c19372d78133e386467b4ad92f4cb13dcc058d",
+          "branch_name": "test-run-1704857811352"
+        },
+        {
+          "x": 5,
+          "y": 13.566666666666666,
+          "commit_hash": "2a0a3dadb0603d488b4076f5cdb75297f45802bd",
+          "branch_name": "test-run-1704857811356"
+        },
+        {
+          "x": 6,
+          "y": 13.766666666666667,
+          "commit_hash": "02eb3a997f5c5123e5def6c49d6b445f9449a748",
+          "branch_name": "test-run-1704857811358"
+        },
+        {
+          "x": 7,
+          "y": 14.033333333333333,
+          "commit_hash": "8cf0bae64afb21e492efe1f1ad9eb1d898c14b91",
+          "branch_name": "test-run-1704857811362"
+        },
+        {
+          "x": 8,
+          "y": 13.533333333333333,
+          "commit_hash": "de7f50310ea722491f0d422434c6f0c077fa0e7f",
+          "branch_name": "test-run-1704857811364"
+        },
+        {
+          "x": 9,
+          "y": 13.65,
+          "commit_hash": "ee876ee229cdc2f3b1ff80f6d60568a1869f9385",
+          "branch_name": "test-run-1704857811366"
+        },
+        {
+          "x": 10,
+          "y": 16.05,
+          "commit_hash": "fe4337982fc3a097ab6ee27554caefdcf934f281",
+          "branch_name": "test-run-1704857811370"
+        },
+        {
+          "x": 11,
+          "y": 43.1,
+          "commit_hash": "ea16c4cf0833afa2b2386260928b804d7f471112",
+          "branch_name": "test-run-1704857811371"
+        },
+        {
+          "x": 12,
+          "y": 14.266666666666667,
+          "commit_hash": "5d25cf8ef920310341a782b11bb51ad7462a2902",
+          "branch_name": "test-run-1704857811379"
+        },
+        {
+          "x": 13,
+          "y": 8.716666666666667,
+          "commit_hash": "6986b28b40adc41888de59736207303862859c22",
+          "branch_name": "test-run-1704857811381"
+        },
+        {
+          "x": 14,
+          "y": 8.55,
+          "commit_hash": "5e47be63595e70eb901a477b2c18adca8df5b419",
+          "branch_name": "test-run-1704857811384"
+        },
+        {
+          "x": 15,
+          "y": 0.6333333333333333,
+          "commit_hash": "01f12f05b2f1c617cefc005933a632bcedb2d703",
+          "branch_name": "test-run-1704857811387"
+        },
+        {
+          "x": 16,
+          "y": 7.383333333333334,
+          "commit_hash": "6c28d45260d3d1655f12f374f61f563c87c98344",
+          "branch_name": "test-run-1704857811388"
+        },
+        {
+          "x": 17,
+          "y": 7.433333333333334,
+          "commit_hash": "57e4bad0a324be68384d9ea1ff1dc1b1797e7726",
+          "branch_name": "test-run-1704857811389"
+        },
+        {
+          "x": 18,
+          "y": 7.65,
+          "commit_hash": "f515556dab7f4686544f953d0f9d52ef8ac5de94",
+          "branch_name": "test-run-1704857811390"
+        },
+        {
+          "x": 19,
+          "y": 7.6,
+          "commit_hash": "561fdc2f87e732cc8ea8c3a2223041efef3a63d3",
+          "branch_name": "test-run-1704857811392"
+        }
+      ],
+      "borderColor": "#4CAF50",
+      "backgroundColor": "#4CAF5020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 44.03333333333333,
+          "commit_hash": "646a28e9a8e2b9d201a06c52e205e004d54724db",
+          "branch_name": "test-run-1704857811340"
+        },
+        {
+          "x": 1,
+          "y": 28.466666666666665,
+          "commit_hash": "f0a4b483c464574aa8207f97b458fdf2c87c25df",
+          "branch_name": "test-run-1704857811351"
+        },
+        {
+          "x": 2,
+          "y": 28.033333333333335,
+          "commit_hash": "095088b5bc1866c5ab8fb004eff6a56d49c0a381",
+          "branch_name": "test-run-1704857811357"
+        },
+        {
+          "x": 3,
+          "y": 32.11666666666667,
+          "commit_hash": "ac28b21f0378c1f5a82af66706a7be8486675166",
+          "branch_name": "test-run-1704857811363"
+        },
+        {
+          "x": 4,
+          "y": 29.383333333333333,
+          "commit_hash": "82c19372d78133e386467b4ad92f4cb13dcc058d",
+          "branch_name": "test-run-1704857811369"
+        },
+        {
+          "x": 5,
+          "y": 31.783333333333335,
+          "commit_hash": "2a0a3dadb0603d488b4076f5cdb75297f45802bd",
+          "branch_name": "test-run-1704857811375"
+        },
+        {
+          "x": 6,
+          "y": 33.65,
+          "commit_hash": "02eb3a997f5c5123e5def6c49d6b445f9449a748",
+          "branch_name": "test-run-1704857811378"
+        },
+        {
+          "x": 7,
+          "y": 28.1,
+          "commit_hash": "8cf0bae64afb21e492efe1f1ad9eb1d898c14b91",
+          "branch_name": "test-run-1704857811385"
+        },
+        {
+          "x": 8,
+          "y": 28.333333333333332,
+          "commit_hash": "de7f50310ea722491f0d422434c6f0c077fa0e7f",
+          "branch_name": "test-run-1704857811391"
+        },
+        {
+          "x": 9,
+          "y": 28.05,
+          "commit_hash": "ee876ee229cdc2f3b1ff80f6d60568a1869f9385",
+          "branch_name": "test-run-1704857811396"
+        },
+        {
+          "x": 10,
+          "y": 34.38333333333333,
+          "commit_hash": "fe4337982fc3a097ab6ee27554caefdcf934f281",
+          "branch_name": "test-run-1704857811400"
+        },
+        {
+          "x": 11,
+          "y": 28.183333333333334,
+          "commit_hash": "ea16c4cf0833afa2b2386260928b804d7f471112",
+          "branch_name": "test-run-1704857811404"
+        },
+        {
+          "x": 12,
+          "y": 39.61666666666667,
+          "commit_hash": "5d25cf8ef920310341a782b11bb51ad7462a2902",
+          "branch_name": "test-run-1704857811408"
+        },
+        {
+          "x": 13,
+          "y": 23.133333333333333,
+          "commit_hash": "6986b28b40adc41888de59736207303862859c22",
+          "branch_name": "test-run-1704857811412"
+        },
+        {
+          "x": 14,
+          "y": 30.016666666666666,
+          "commit_hash": "5e47be63595e70eb901a477b2c18adca8df5b419",
+          "branch_name": "test-run-1704857811416"
+        },
+        {
+          "x": 15,
+          "y": 28.333333333333332,
+          "commit_hash": "01f12f05b2f1c617cefc005933a632bcedb2d703",
+          "branch_name": "test-run-1704857811422"
+        },
+        {
+          "x": 16,
+          "y": 26.183333333333334,
+          "commit_hash": "6c28d45260d3d1655f12f374f61f563c87c98344",
+          "branch_name": "test-run-1704857811427"
+        },
+        {
+          "x": 17,
+          "y": 27.716666666666665,
+          "commit_hash": "57e4bad0a324be68384d9ea1ff1dc1b1797e7726",
+          "branch_name": "test-run-1704857811431"
+        },
+        {
+          "x": 18,
+          "y": 29.466666666666665,
+          "commit_hash": "f515556dab7f4686544f953d0f9d52ef8ac5de94",
+          "branch_name": "test-run-1704857811436"
+        },
+        {
+          "x": 19,
+          "y": 25.3,
+          "commit_hash": "561fdc2f87e732cc8ea8c3a2223041efef3a63d3",
+          "branch_name": "test-run-1704857811439"
+        }
+      ],
+      "borderColor": "#FF9800",
+      "backgroundColor": "#FF980020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    }
+  ],
+  [
+    {
+      "label": "github-actions-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.0,
+          "commit_hash": "7649b6e6cac498a85c32bac9feb9ba6090b94c52",
+          "branch_name": "test-run-1704855667455"
+        }
+      ],
+      "borderColor": "#2196F3",
+      "backgroundColor": "#2196F320",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.0,
+          "commit_hash": "7649b6e6cac498a85c32bac9feb9ba6090b94c52",
+          "branch_name": "test-run-1704855667456"
+        }
+      ],
+      "borderColor": "#F44336",
+      "backgroundColor": "#F4433620",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.0,
+          "commit_hash": "7649b6e6cac498a85c32bac9feb9ba6090b94c52",
+          "branch_name": "test-run-1704855667454"
+        }
+      ],
+      "borderColor": "#9C27B0",
+      "backgroundColor": "#9C27B020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "garnix",
+      "data": [
+        {
+          "x": 0,
+          "y": 1.0,
+          "commit_hash": "7649b6e6cac498a85c32bac9feb9ba6090b94c52",
+          "branch_name": "test-run-1704855667453"
+        },
+        {
+          "x": 1,
+          "y": 0.4,
+          "commit_hash": "6f078a48a639cce48d1016cce323940cac8122e5",
+          "branch_name": "test-run-1704855667458"
+        },
+        {
+          "x": 2,
+          "y": 0.31666666666666665,
+          "commit_hash": "d9fe46a6be2baeb056a4cfadf4046c3ed03390e9",
+          "branch_name": "test-run-1704855667459"
+        },
+        {
+          "x": 3,
+          "y": 0.35,
+          "commit_hash": "45694d38c49b7467b9f6e16529eadaaf1965dbfc",
+          "branch_name": "test-run-1704855667460"
+        },
+        {
+          "x": 4,
+          "y": 0.31666666666666665,
+          "commit_hash": "0b84523121d6302fbe30eda7899ec3b81810748e",
+          "branch_name": "test-run-1704855667461"
+        },
+        {
+          "x": 5,
+          "y": 0.31666666666666665,
+          "commit_hash": "d6c5a4af9ccba9cc390a9a35e52590af13a31461",
+          "branch_name": "test-run-1704855667462"
+        },
+        {
+          "x": 6,
+          "y": 0.3333333333333333,
+          "commit_hash": "d0215eca8804d0be5d3551c39404e336032c3141",
+          "branch_name": "test-run-1704855667463"
+        },
+        {
+          "x": 7,
+          "y": 0.38333333333333336,
+          "commit_hash": "07901026a024f780ca945123a82f1dd1fb2fea15",
+          "branch_name": "test-run-1704855667464"
+        },
+        {
+          "x": 8,
+          "y": 0.31666666666666665,
+          "commit_hash": "ff0fcf6cde71c95568b1436315a2c2259a7f69f6",
+          "branch_name": "test-run-1704855667465"
+        },
+        {
+          "x": 9,
+          "y": 0.36666666666666664,
+          "commit_hash": "5214555683f5f3eb50cbe009613be8d99d0f1981",
+          "branch_name": "test-run-1704855667466"
+        },
+        {
+          "x": 10,
+          "y": 0.35,
+          "commit_hash": "a143dcf11195752a544918a0c19f144b98ff80eb",
+          "branch_name": "test-run-1704855667467"
+        },
+        {
+          "x": 11,
+          "y": 0.31666666666666665,
+          "commit_hash": "871030e9978a1042d7e96203680952dcbe09601c",
+          "branch_name": "test-run-1704855667468"
+        },
+        {
+          "x": 12,
+          "y": 0.3333333333333333,
+          "commit_hash": "21e798ccdff6ac9c08515a783fcba3accb5d99b0",
+          "branch_name": "test-run-1704855667469"
+        },
+        {
+          "x": 13,
+          "y": 0.36666666666666664,
+          "commit_hash": "c1be39abc76b532dc9474d54246d8c7e0a284204",
+          "branch_name": "test-run-1704855667470"
+        },
+        {
+          "x": 14,
+          "y": 0.6666666666666666,
+          "commit_hash": "2cabe799e2246dfa1a1a718408c8bcc347dbc97b",
+          "branch_name": "test-run-1704855667471"
+        },
+        {
+          "x": 15,
+          "y": 0.5166666666666667,
+          "commit_hash": "aea28cb499811670c44b1533cb40aa55cdc651ae",
+          "branch_name": "test-run-1704855667472"
+        },
+        {
+          "x": 16,
+          "y": 0.35,
+          "commit_hash": "2786f6075245949bc562ce56a9301de1acb99110",
+          "branch_name": "test-run-1704855667473"
+        },
+        {
+          "x": 17,
+          "y": 0.45,
+          "commit_hash": "94f759a53ce496a433221ba063cb52d3e5cf117b",
+          "branch_name": "test-run-1704855667474"
+        },
+        {
+          "x": 18,
+          "y": 0.4166666666666667,
+          "commit_hash": "749e105cd9665269d7bb12318752d3455b1edec8",
+          "branch_name": "test-run-1704855667475"
+        },
+        {
+          "x": 19,
+          "y": 0.31666666666666665,
+          "commit_hash": "cc68c0fb0f031865c6a78c5f2f21e0c65c566570",
+          "branch_name": "test-run-1704855667476"
+        }
+      ],
+      "borderColor": "#4CAF50",
+      "backgroundColor": "#4CAF5020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 0.0,
+          "commit_hash": "7649b6e6cac498a85c32bac9feb9ba6090b94c52",
+          "branch_name": "test-run-1704855667457"
+        }
+      ],
+      "borderColor": "#FF9800",
+      "backgroundColor": "#FF980020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    }
+  ],
+  [
+    {
+      "label": "github-actions-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 12.333333333333334,
+          "commit_hash": "068fa9dc13fd477e57390e5b540ed51aa3f926ac",
+          "branch_name": "test-run-1704900489231"
+        },
+        {
+          "x": 1,
+          "y": 10.1,
+          "commit_hash": "c42eff0750f0ba1493ad3e94f36cab6c74d01795",
+          "branch_name": "test-run-1704900489240"
+        },
+        {
+          "x": 2,
+          "y": 7.933333333333334,
+          "commit_hash": "e03efba8d2445673c5172fce6db88749ebeff318",
+          "branch_name": "test-run-1704900489245"
+        },
+        {
+          "x": 3,
+          "y": 9.233333333333333,
+          "commit_hash": "f52b35af4e646da3d9d86408d9ccda9134e2b9c7",
+          "branch_name": "test-run-1704900489249"
+        },
+        {
+          "x": 4,
+          "y": 228.13333333333333,
+          "commit_hash": "494eb9241d1417015870420431de6e691c821607",
+          "branch_name": "test-run-1704945889281"
+        },
+        {
+          "x": 5,
+          "y": 183.63333333333333,
+          "commit_hash": "d2eac5090cc3b62581b841c4de7a9399e9441b71",
+          "branch_name": "test-run-1704945889284"
+        },
+        {
+          "x": 6,
+          "y": 173.91666666666666,
+          "commit_hash": "39c4deb324604d2f842ef251df6eb135de8caee2",
+          "branch_name": "test-run-1704945889286"
+        }
+      ],
+      "borderColor": "#2196F3",
+      "backgroundColor": "#2196F320",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 11.85,
+          "commit_hash": "068fa9dc13fd477e57390e5b540ed51aa3f926ac",
+          "branch_name": "test-run-1704906462330"
+        },
+        {
+          "x": 1,
+          "y": 7.133333333333334,
+          "commit_hash": "c42eff0750f0ba1493ad3e94f36cab6c74d01795",
+          "branch_name": "test-run-1704906462340"
+        },
+        {
+          "x": 2,
+          "y": 9.883333333333333,
+          "commit_hash": "e03efba8d2445673c5172fce6db88749ebeff318",
+          "branch_name": "test-run-1704906462342"
+        },
+        {
+          "x": 3,
+          "y": 4.116666666666666,
+          "commit_hash": "f52b35af4e646da3d9d86408d9ccda9134e2b9c7",
+          "branch_name": "test-run-1704906462345"
+        },
+        {
+          "x": 4,
+          "y": 207.76666666666668,
+          "commit_hash": "494eb9241d1417015870420431de6e691c821607",
+          "branch_name": "test-run-1704906462346"
+        },
+        {
+          "x": 5,
+          "y": 9.2,
+          "commit_hash": "d2eac5090cc3b62581b841c4de7a9399e9441b71",
+          "branch_name": "test-run-1704906462350"
+        },
+        {
+          "x": 6,
+          "y": 5.466666666666667,
+          "commit_hash": "39c4deb324604d2f842ef251df6eb135de8caee2",
+          "branch_name": "test-run-1704906462351"
+        },
+        {
+          "x": 7,
+          "y": 8.8,
+          "commit_hash": "25361bdd16b022fc0e967b43f1bce6a6d91740bb",
+          "branch_name": "test-run-1704906462353"
+        },
+        {
+          "x": 8,
+          "y": 8.416666666666666,
+          "commit_hash": "60a68b6886da6ead6a1acaecafbbc2fbf03f866c",
+          "branch_name": "test-run-1704906462355"
+        },
+        {
+          "x": 9,
+          "y": 5.4,
+          "commit_hash": "04c5a79f0be578076a07c08c5562306905a517be",
+          "branch_name": "test-run-1704906462357"
+        },
+        {
+          "x": 10,
+          "y": 6.116666666666666,
+          "commit_hash": "7ca2cf744727e970fe9160e459eb200ec85fe35b",
+          "branch_name": "test-run-1704906462359"
+        },
+        {
+          "x": 11,
+          "y": 25.85,
+          "commit_hash": "ce70a8e95848ad9915fea65d5bbf83f44743a074",
+          "branch_name": "test-run-1704906462361"
+        },
+        {
+          "x": 12,
+          "y": 10.916666666666666,
+          "commit_hash": "0540ce60cb3660e12b32e46dafc6b9b10b237a0e",
+          "branch_name": "test-run-1704906462363"
+        },
+        {
+          "x": 13,
+          "y": 10.833333333333334,
+          "commit_hash": "0fab478e0b3f9176684b8f567bb497414750d6ba",
+          "branch_name": "test-run-1704906462366"
+        },
+        {
+          "x": 14,
+          "y": 153.66666666666666,
+          "commit_hash": "0d9588545a10478363cc0ec8e211c8d1e02eaf3c",
+          "branch_name": "test-run-1704906462367"
+        },
+        {
+          "x": 15,
+          "y": 9.0,
+          "commit_hash": "b7f5e79bf1d62ed476a29a36742f9da65a4a2fb7",
+          "branch_name": "test-run-1704906462373"
+        },
+        {
+          "x": 16,
+          "y": 7.116666666666666,
+          "commit_hash": "0a3480974cb468fb4ffe4d658edb5a44c090958c",
+          "branch_name": "test-run-1704906462375"
+        },
+        {
+          "x": 17,
+          "y": 6.466666666666667,
+          "commit_hash": "f6e8fbb0167f30c27194df9218b2162caaf08da0",
+          "branch_name": "test-run-1704906462376"
+        },
+        {
+          "x": 18,
+          "y": 6.466666666666667,
+          "commit_hash": "937102bcba49ad6c3502403f75cddc943535e5a2",
+          "branch_name": "test-run-1704906462377"
+        },
+        {
+          "x": 19,
+          "y": 8.75,
+          "commit_hash": "9d502be26597e26c468f94f7c56a6c5692cd0577",
+          "branch_name": "test-run-1704906462378"
+        }
+      ],
+      "borderColor": "#F44336",
+      "backgroundColor": "#F4433620",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-cachix-parallel",
+      "data": [
+        {
+          "x": 0,
+          "y": 10.25,
+          "commit_hash": "068fa9dc13fd477e57390e5b540ed51aa3f926ac",
+          "branch_name": "test-run-1704906462329"
+        },
+        {
+          "x": 1,
+          "y": 7.266666666666667,
+          "commit_hash": "c42eff0750f0ba1493ad3e94f36cab6c74d01795",
+          "branch_name": "test-run-1704906462339"
+        },
+        {
+          "x": 2,
+          "y": 7.416666666666667,
+          "commit_hash": "e03efba8d2445673c5172fce6db88749ebeff318",
+          "branch_name": "test-run-1704906462341"
+        },
+        {
+          "x": 3,
+          "y": 3.9,
+          "commit_hash": "f52b35af4e646da3d9d86408d9ccda9134e2b9c7",
+          "branch_name": "test-run-1704906462343"
+        },
+        {
+          "x": 4,
+          "y": 202.95,
+          "commit_hash": "494eb9241d1417015870420431de6e691c821607",
+          "branch_name": "test-run-1704906462344"
+        },
+        {
+          "x": 5,
+          "y": 9.3,
+          "commit_hash": "d2eac5090cc3b62581b841c4de7a9399e9441b71",
+          "branch_name": "test-run-1704906462348"
+        },
+        {
+          "x": 6,
+          "y": 10.55,
+          "commit_hash": "39c4deb324604d2f842ef251df6eb135de8caee2",
+          "branch_name": "test-run-1704906462349"
+        },
+        {
+          "x": 7,
+          "y": 6.5,
+          "commit_hash": "25361bdd16b022fc0e967b43f1bce6a6d91740bb",
+          "branch_name": "test-run-1704906462352"
+        },
+        {
+          "x": 8,
+          "y": 8.7,
+          "commit_hash": "60a68b6886da6ead6a1acaecafbbc2fbf03f866c",
+          "branch_name": "test-run-1704906462354"
+        },
+        {
+          "x": 9,
+          "y": 8.833333333333334,
+          "commit_hash": "04c5a79f0be578076a07c08c5562306905a517be",
+          "branch_name": "test-run-1704906462356"
+        },
+        {
+          "x": 10,
+          "y": 4.05,
+          "commit_hash": "7ca2cf744727e970fe9160e459eb200ec85fe35b",
+          "branch_name": "test-run-1704906462358"
+        },
+        {
+          "x": 11,
+          "y": 28.2,
+          "commit_hash": "ce70a8e95848ad9915fea65d5bbf83f44743a074",
+          "branch_name": "test-run-1704906462360"
+        },
+        {
+          "x": 12,
+          "y": 3.566666666666667,
+          "commit_hash": "0540ce60cb3660e12b32e46dafc6b9b10b237a0e",
+          "branch_name": "test-run-1704906462362"
+        },
+        {
+          "x": 13,
+          "y": 4.016666666666667,
+          "commit_hash": "0fab478e0b3f9176684b8f567bb497414750d6ba",
+          "branch_name": "test-run-1704906462364"
+        },
+        {
+          "x": 14,
+          "y": 145.31666666666666,
+          "commit_hash": "0d9588545a10478363cc0ec8e211c8d1e02eaf3c",
+          "branch_name": "test-run-1704906462365"
+        },
+        {
+          "x": 15,
+          "y": 8.433333333333334,
+          "commit_hash": "b7f5e79bf1d62ed476a29a36742f9da65a4a2fb7",
+          "branch_name": "test-run-1704906462369"
+        },
+        {
+          "x": 16,
+          "y": 7.166666666666667,
+          "commit_hash": "0a3480974cb468fb4ffe4d658edb5a44c090958c",
+          "branch_name": "test-run-1704906462370"
+        },
+        {
+          "x": 17,
+          "y": 7.3,
+          "commit_hash": "f6e8fbb0167f30c27194df9218b2162caaf08da0",
+          "branch_name": "test-run-1704906462371"
+        },
+        {
+          "x": 18,
+          "y": 7.016666666666667,
+          "commit_hash": "937102bcba49ad6c3502403f75cddc943535e5a2",
+          "branch_name": "test-run-1704906462372"
+        },
+        {
+          "x": 19,
+          "y": 7.183333333333334,
+          "commit_hash": "9d502be26597e26c468f94f7c56a6c5692cd0577",
+          "branch_name": "test-run-1704906462374"
+        }
+      ],
+      "borderColor": "#9C27B0",
+      "backgroundColor": "#9C27B020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "garnix",
+      "data": [
+        {
+          "x": 0,
+          "y": 4.9,
+          "commit_hash": "068fa9dc13fd477e57390e5b540ed51aa3f926ac",
+          "branch_name": "test-run-1704900489228"
+        },
+        {
+          "x": 1,
+          "y": 0.3,
+          "commit_hash": "c42eff0750f0ba1493ad3e94f36cab6c74d01795",
+          "branch_name": "test-run-1704900489233"
+        },
+        {
+          "x": 2,
+          "y": 4.066666666666666,
+          "commit_hash": "e03efba8d2445673c5172fce6db88749ebeff318",
+          "branch_name": "test-run-1704900489234"
+        },
+        {
+          "x": 3,
+          "y": 1.1,
+          "commit_hash": "f52b35af4e646da3d9d86408d9ccda9134e2b9c7",
+          "branch_name": "test-run-1704900489235"
+        },
+        {
+          "x": 4,
+          "y": 19.733333333333334,
+          "commit_hash": "494eb9241d1417015870420431de6e691c821607",
+          "branch_name": "test-run-1704900489238"
+        },
+        {
+          "x": 5,
+          "y": 0.38333333333333336,
+          "commit_hash": "d2eac5090cc3b62581b841c4de7a9399e9441b71",
+          "branch_name": "test-run-1704900489250"
+        },
+        {
+          "x": 6,
+          "y": 0.35,
+          "commit_hash": "39c4deb324604d2f842ef251df6eb135de8caee2",
+          "branch_name": "test-run-1704900489251"
+        },
+        {
+          "x": 7,
+          "y": 0.31666666666666665,
+          "commit_hash": "25361bdd16b022fc0e967b43f1bce6a6d91740bb",
+          "branch_name": "test-run-1704900489252"
+        },
+        {
+          "x": 8,
+          "y": 0.35,
+          "commit_hash": "60a68b6886da6ead6a1acaecafbbc2fbf03f866c",
+          "branch_name": "test-run-1704900489254"
+        },
+        {
+          "x": 9,
+          "y": 0.3,
+          "commit_hash": "04c5a79f0be578076a07c08c5562306905a517be",
+          "branch_name": "test-run-1704900489255"
+        },
+        {
+          "x": 10,
+          "y": 1.15,
+          "commit_hash": "7ca2cf744727e970fe9160e459eb200ec85fe35b",
+          "branch_name": "test-run-1704900489256"
+        },
+        {
+          "x": 11,
+          "y": 10.483333333333333,
+          "commit_hash": "ce70a8e95848ad9915fea65d5bbf83f44743a074",
+          "branch_name": "test-run-1704900489257"
+        },
+        {
+          "x": 12,
+          "y": 0.4,
+          "commit_hash": "0540ce60cb3660e12b32e46dafc6b9b10b237a0e",
+          "branch_name": "test-run-1704900489260"
+        },
+        {
+          "x": 13,
+          "y": 0.36666666666666664,
+          "commit_hash": "0fab478e0b3f9176684b8f567bb497414750d6ba",
+          "branch_name": "test-run-1704900489261"
+        },
+        {
+          "x": 14,
+          "y": 0.35,
+          "commit_hash": "0d9588545a10478363cc0ec8e211c8d1e02eaf3c",
+          "branch_name": "test-run-1704906462333"
+        },
+        {
+          "x": 15,
+          "y": 0.31666666666666665,
+          "commit_hash": "b7f5e79bf1d62ed476a29a36742f9da65a4a2fb7",
+          "branch_name": "test-run-1704906462334"
+        },
+        {
+          "x": 16,
+          "y": 1.5166666666666666,
+          "commit_hash": "0a3480974cb468fb4ffe4d658edb5a44c090958c",
+          "branch_name": "test-run-1704906462335"
+        },
+        {
+          "x": 17,
+          "y": 1.3666666666666667,
+          "commit_hash": "f6e8fbb0167f30c27194df9218b2162caaf08da0",
+          "branch_name": "test-run-1704906462336"
+        },
+        {
+          "x": 18,
+          "y": 1.3666666666666667,
+          "commit_hash": "937102bcba49ad6c3502403f75cddc943535e5a2",
+          "branch_name": "test-run-1704906462337"
+        },
+        {
+          "x": 19,
+          "y": 1.1666666666666667,
+          "commit_hash": "9d502be26597e26c468f94f7c56a6c5692cd0577",
+          "branch_name": "test-run-1704906462338"
+        }
+      ],
+      "borderColor": "#4CAF50",
+      "backgroundColor": "#4CAF5020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    },
+    {
+      "label": "github-actions-serial",
+      "data": [
+        {
+          "x": 0,
+          "y": 13.066666666666666,
+          "commit_hash": "068fa9dc13fd477e57390e5b540ed51aa3f926ac",
+          "branch_name": "test-run-1704900489229"
+        },
+        {
+          "x": 1,
+          "y": 11.2,
+          "commit_hash": "c42eff0750f0ba1493ad3e94f36cab6c74d01795",
+          "branch_name": "test-run-1704900489242"
+        },
+        {
+          "x": 2,
+          "y": 8.366666666666667,
+          "commit_hash": "e03efba8d2445673c5172fce6db88749ebeff318",
+          "branch_name": "test-run-1704900489246"
+        },
+        {
+          "x": 3,
+          "y": 10.083333333333334,
+          "commit_hash": "f52b35af4e646da3d9d86408d9ccda9134e2b9c7",
+          "branch_name": "test-run-1704900489253"
+        },
+        {
+          "x": 4,
+          "y": 177.28333333333333,
+          "commit_hash": "494eb9241d1417015870420431de6e691c821607",
+          "branch_name": "test-run-1704906462331"
+        },
+        {
+          "x": 5,
+          "y": 219.33333333333334,
+          "commit_hash": "d2eac5090cc3b62581b841c4de7a9399e9441b71",
+          "branch_name": "test-run-1704906462347"
+        },
+        {
+          "x": 6,
+          "y": 188.25,
+          "commit_hash": "39c4deb324604d2f842ef251df6eb135de8caee2",
+          "branch_name": "test-run-1704945889282"
+        },
+        {
+          "x": 7,
+          "y": 189.2,
+          "commit_hash": "25361bdd16b022fc0e967b43f1bce6a6d91740bb",
+          "branch_name": "test-run-1704945889283"
+        },
+        {
+          "x": 8,
+          "y": 187.43333333333334,
+          "commit_hash": "60a68b6886da6ead6a1acaecafbbc2fbf03f866c",
+          "branch_name": "test-run-1704945889285"
+        }
+      ],
+      "borderColor": "#FF9800",
+      "backgroundColor": "#FF980020",
+      "fill": false,
+      "tension": 0.1,
+      "pointRadius": 4,
+      "pointHoverRadius": 6
+    }
+  ]
+];
+        
+        let chart = null;
+        let currentTab = 0;
+        
+        // Initialize Chart.js
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        function filterData(datasets) {
+            const includeFirst = document.getElementById('includeFirst').checked;
+            const includeOthers = document.getElementById('includeOthers').checked;
+            
+            return datasets.map(dataset => {
+                const filteredData = dataset.data.filter(point => {
+                    if (point.x === 0) {
+                        return includeFirst;
+                    } else {
+                        return includeOthers;
+                    }
+                });
+                
+                return {
+                    ...dataset,
+                    data: filteredData
+                };
+            });
+        }
+        
+        function calculateStats(datasets) {
+            // First, collect all commit indices that exist across all platforms
+            const allCommitIndices = new Set();
+            datasets.forEach(dataset => {
+                dataset.data.forEach(point => allCommitIndices.add(point.x));
+            });
+            const sortedIndices = Array.from(allCommitIndices).sort((a, b) => a - b);
+            
+            // Check if any platform is missing data
+            let hasMissingData = false;
+            datasets.forEach(dataset => {
+                const platformIndices = new Set(dataset.data.map(d => d.x));
+                if (platformIndices.size !== sortedIndices.length) {
+                    hasMissingData = true;
+                }
+            });
+            
+            const stats = {};
+            
+            if (!hasMissingData) {
+                // No missing data - calculate normally
+                datasets.forEach(dataset => {
+                    const times = dataset.data.map(d => d.y);
+                    if (times.length > 0) {
+                        stats[dataset.label] = {
+                            avg: times.reduce((a, b) => a + b, 0) / times.length,
+                            min: Math.min(...times),
+                            max: Math.max(...times),
+                            count: times.length,
+                            isProjected: false
+                        };
+                    }
+                });
+            } else {
+                // Missing data - use projection method
+                
+                // Calculate speed factors for each platform relative to others
+                const platformSpeedFactors = {};
+                
+                datasets.forEach(dataset => {
+                    const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
+                    let totalSpeedFactor = 0;
+                    let comparisons = 0;
+                    
+                    // Debug info for speed factor calculation
+                    const debugComparisons = [];
+                    
+                    // Compare with other platforms for overlapping commits
+                    datasets.forEach(otherDataset => {
+                        if (dataset.label === otherDataset.label) return;
+                        
+                        const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
+                        
+                        // Find overlapping commits
+                        for (const [commitIndex, time] of platformData) {
+                            if (otherData.has(commitIndex)) {
+                                const otherTime = otherData.get(commitIndex);
+                                if (otherTime > 0) {
+                                    const ratio = time / otherTime;
+                                    totalSpeedFactor += ratio;
+                                    comparisons++;
+                                    
+                                    // Debug: track individual comparisons
+                                    if (dataset.label === datasets[0].label && debugComparisons.length < 10) {
+                                        debugComparisons.push(`Commit ${commitIndex}: ${time.toFixed(1)}m / ${otherTime.toFixed(1)}m = ${ratio.toFixed(3)}`);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    if (comparisons > 0) {
+                        platformSpeedFactors[dataset.label] = totalSpeedFactor / comparisons;
+                        
+                        // Debug output for first platform
+                        if (dataset.label === datasets[0].label) {
+                            console.log(`Speed factor debug for ${dataset.label}:`);
+                            console.log(`  Total comparisons: ${comparisons}`);
+                            console.log(`  Sample ratios: ${debugComparisons.join(', ')}`);
+                            console.log(`  Final speed factor: ${(totalSpeedFactor / comparisons).toFixed(3)}`);
+                        }
+                    } else {
+                        platformSpeedFactors[dataset.label] = 1.0; // fallback
+                    }
+                });
+                
+                // Calculate projected averages
+                datasets.forEach(dataset => {
+                    const platformData = new Map(dataset.data.map(d => [d.x, d.y]));
+                    const actualTimes = dataset.data.map(d => d.y);
+                    
+                    if (actualTimes.length === 0) return;
+                    
+                    const speedFactor = platformSpeedFactors[dataset.label];
+                    let projectedSum = 0;
+                    let totalCount = 0;
+                    let missingCount = 0;
+                    
+                    // Process all possible commits (both actual and missing)
+                    sortedIndices.forEach(commitIndex => {
+                        if (platformData.has(commitIndex)) {
+                            // Use actual value
+                            projectedSum += platformData.get(commitIndex);
+                            totalCount++;
+                        } else {
+                            // Missing data point - project from other platforms
+                            let projectedValue = 0;
+                            let sourceCount = 0;
+                            
+                            datasets.forEach(otherDataset => {
+                                if (dataset.label === otherDataset.label) return;
+                                const otherData = new Map(otherDataset.data.map(d => [d.x, d.y]));
+                                
+                                if (otherData.has(commitIndex)) {
+                                    projectedValue += otherData.get(commitIndex);
+                                    sourceCount++;
+                                }
+                            });
+                            
+                            if (sourceCount > 0) {
+                                // Average other platforms' times and apply speed factor
+                                const avgOtherTime = projectedValue / sourceCount;
+                                projectedSum += avgOtherTime * speedFactor;
+                                totalCount++;
+                                missingCount++;
+                            }
+                        }
+                    });
+                    
+                    const actualAvg = actualTimes.length > 0 ? actualTimes.reduce((a, b) => a + b, 0) / actualTimes.length : 0;
+                    const projectedAvg = totalCount > 0 ? projectedSum / totalCount : 0;
+                    
+                    // Debug logging for first platform to see what's happening
+                    if (dataset.label === datasets[0].label) {
+                        console.log(`Debug ${dataset.label}:`);
+                        console.log(`  Speed factor: ${speedFactor.toFixed(3)}`);
+                        console.log(`  Actual avg: ${actualAvg.toFixed(2)}m (from ${actualTimes.length} commits)`);
+                        console.log(`  Projected avg: ${projectedAvg.toFixed(2)}m (from ${totalCount} commits, ${missingCount} projected)`);
+                        console.log(`  All commits: ${sortedIndices.length}`);
+                    }
+                    
+                    stats[dataset.label] = {
+                        avg: projectedAvg,
+                        actualAvg: actualAvg,
+                        min: Math.min(...actualTimes),
+                        max: Math.max(...actualTimes),
+                        count: actualTimes.length,
+                        totalCount: totalCount,
+                        missingCount: missingCount,
+                        isProjected: missingCount > 0,
+                        speedFactor: speedFactor
+                    };
+                });
+            }
+            
+            return stats;
+        }
+        
+        function createChart(datasets, repoName) {
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const filteredDatasets = filterData(datasets);
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: filteredDatasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `CI Build Times Over Time - ${repoName}`,
+                            font: { size: 18 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const point = context[0];
+                                    const commit = point.raw.commit_hash.substring(0, 8);
+                                    return `Commit #${point.parsed.x}: ${commit}`;
+                                },
+                                label: function(context) {
+                                    const time = context.parsed.y.toFixed(1);
+                                    const branch = context.raw.branch_name || 'main';
+                                    return `${context.dataset.label}: ${time} minutes (branch: ${branch})`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Commit Sequence'
+                            },
+                            grid: {
+                                display: true,
+                                color: '#e0e0e0'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Build Time (minutes)'
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateStats(datasets) {
+            const stats = calculateStats(datasets);
+            const statsContainer = document.getElementById('stats');
+            statsContainer.innerHTML = '';
+            
+            Object.entries(stats).forEach(([platform, stat]) => {
+                const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
+                const asterisk = stat.isProjected ? '*' : '';
+                const tooltip = stat.isProjected 
+                    ? `title="Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor)"` 
+                    : '';
+                
+                statsContainer.innerHTML += `
+                    <div class="stat-card" ${tooltip}>
+                        <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
+                        <div class="stat-label">${platform}<br>Average Time (${stat.count}/${stat.totalCount || stat.count} commits)</div>
+                    </div>
+                `;
+            });
+        }
+        
+        function updateChart() {
+            if (currentTab >= 0) {
+                const filteredDatasets = filterData(allDatasets[currentTab]);
+                
+                // Update chart data
+                chart.data.datasets = filteredDatasets;
+                chart.update();
+                
+                // Update statistics
+                updateStats(filteredDatasets);
+            }
+        }
+        
+        function showTab(tabIndex) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                tab.classList.toggle('active', index === tabIndex);
+            });
+            
+            currentTab = tabIndex;
+            
+            // Update chart and stats with current filters
+            createChart(allDatasets[tabIndex], repoNames[tabIndex]);
+            const filteredDatasets = filterData(allDatasets[tabIndex]);
+            updateStats(filteredDatasets);
+        }
+        
+        // Initialize with first tab
+        showTab(0);
+    </script>
+</body>
+</html>

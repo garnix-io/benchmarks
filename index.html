@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nix CI Benchmarks</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="public/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Nix CI Benchmarks</h1>
+        <div class="subtitle">Benchmarks for Nix CI build times across different CI platforms</div>
+
+    <p>We picked some open source projects with lots of stars that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
+
+    <p>We ran the following setups:</p>
+
+    <ul id="ci-list">
+        <li>(1) GitHub Actions, in serial and parallel, without any caching.</li>
+        <li>(2) GitHub Actions in parallel with magic-nix-cache for caching.</li>
+        <li>(3) GitHub Actions in parallel with Cachix for caching.</li>
+        <li>(4) GitHub Actions with nixbuild.net for building (using the CI workflow, with remote store building).</li>
+        <li>(5) garnix (without incremental builds).</li>
+    </ul>
+
+    <p>These setups span the range of using GitHub Actions for everything (1-2), to
+    including external caches (3), to including external builds (4), to
+    having external <i>evaluators</i> too, and not using GitHub runners for <i>anything</i> (5).</p>
+
+    <p>We picked more popular repos that already had <strong>largely working</strong> Nix builds. For a start, we also focused on:</p>
+
+    <ul>
+        <li>x86_64-linux builds. All CIs tested also support aarch64-linux. nixbuild.net does not support aarch64-darwin and x86_64-darwin;</li>
+        <li>Flakes. garnix in the non-enterprise plan only supports flakes;</li>
+        <li>GPU builds. Only GitHub supports runners with GPUs currently.</li>
+        <li>Tests without virtualization (e.g., no NixOS tests). garnix and GitHub support this; nixbuild.net seems to <a href="https://docs.nixbuild.net/kvm-builds/">have an Early Access</a> on x86_64-linux, though it seems to be Early Access <a href="https://blog.nixbuild.net/posts/2021-10-01-kvm-builds-supported-on-nixbuild-net.html">since 2021</a>.</li>
+    </ul>
+
+    <p>In the future, we might have different test types, excluding from those CIs
+    that don't support the required features.</p>
+
+    <aside role="alert">
+        <p>This benchmark, as well as this text, was created by people at garnix &mdash; one of the
+        CIs benchmarked. This may influence the results in ways that are
+        likely favorable to garnix. For example, there is publication bias coming
+        from the fact that we probably wouldn't have created this benchmark if
+        we didn't think we were faster than alternatives, or published it at
+        the end if that assumption had been wrong.
+        </p>
+        <p>In addition to looking for yourself at what it is doing, you should
+        consider also <strong>running it</strong> yourself, with modifications,
+        and against different repos. If your conclusions differ from the
+        text or results here, open a PR against our benchmark repo! And you
+        can also always enable these different CIs <i>on your own repo</i> to
+        see exactly how they perform there.
+        </p>
+    </aside>
+
+    <p>It's useful to understand the methodology of these benchmarks to
+    interpret them correctly. For the impatient, however, you can
+    <a href="#results">skip to the results</a>.
+
+
+    <h1>Methodology</h1>
+
+    <p>We wrote a script that:</p>
+
+    <ul>
+        <li>Takes as an argument a repo to be tested. This repo must have a flake file.</li>
+        <li>Gets the last 10 commits in that repo. For each of those commits:
+            <ul>
+                <li>It checks the commit out, and finds the derivations to build. This <strong>only includes x86_64-linux builds</strong>.</li>
+                <li>For each of the <a href="#ci-list">CI setups benchmarked</a>:
+                    <ul>
+                        <li>It makes the changes necessary to set up that type of CI (deleting the existing <code>.github</code> and creating a new one, for example).</li>
+                        <li>Pushes that changed commit to a new branch in a separate repo.</li>
+                        <li>Waits for the check suite to finish, or times out after 2 hours.</li>
+                        <li>Records the timing GitHub gives us for the check suite.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>You can see all the GitHub Actions workflow runs (for 1-4) <a href="https://github.com/garnix-io/benchmark-github/actions">here</a> and the garnix logs <a href="https://garnix.io/repo/garnix-io/benchmark-garnix">here</a>.</p>
+
+    <p>Note that the packages and checks that we checked may differ from
+    the ones that are enabled on the repo's own CI.</p>
+
+    <p>For configuration:</p>
+
+    <ul>
+        <li>We used the default GitHub Linux runner. GitHub Actions has runners of up to 96-cores, which cost correspondingly much. For setups 1-3, this would presumably speed up builds substantially; for 4, presumably less so. Changing this would drive up the costs of benchmarking by quite a lot, however.</li>
+        <li>Our Cachix cache was 50GB in size.</li>
+        <li>nixbuild.net was left on the default configuration, but the CI Workflow (with remote stores) was used.</li>
+    </ul>
+
+    <h2>Running it yourself</h2>
+
+    <p>If you'd like to try it out yourself, you can follow these steps:</p>
+
+    <ul>
+        <li>Fork the <a href="https://github.com/garnix-io/benchmark-github">benchmark-github</a> and <a href="https://github.com/garnix-io/benchmark-garnix">benchmark-garnix</a> repos;</li>
+        <li>Change the references in <code>benchmarking.ts</code> from <code>garnix-io/benchmark-github</code> and <code>garnix-io/benchmark-garnix</code> to your new forked repo names;</li>
+        <li>Add your own CACHIX_AUTH_TOKEN and NIXBUILD_NET_TOKEN to your GitHub repository secrets;</li>
+        <li>Enable garnix on your fork of <code>benchmark-garnix</code>;</li>
+        <li>Clone <a href="https://github.com/garnix-io/benchmarks">the benchmark repo</a>;</li>
+        <li>Add a token for GitHub API calls (with e.g. <code>gh login</code>);</li>
+        <li>From inside your clone, run <code>nix run .#benchmark -- &lt;REPO&gt;</code> (for example, <code>nix run .#benchmark atuinsh/atuin</code>).</li>
+    </ul>
+
+    <p><strong>Important notes</strong>:</p>
+
+    <ul>
+        <li>It will likely cost you some money.</li>
+        <li>It will take a long time, especially if you include the slower options
+            (some of these repos took a full day to check!).</li>
+        <li>Check that all CI systems are succeeding and failing the same tests before
+          looking at the timings! Sometimes CIs will finish quicker than they
+          should because they are failing when they shouldn't. And some setups
+          are fail-on-first-error (e.g. GitHub Actions in serial); most aren't.</li>
+        <li>garnix has a <strong>global</strong> cache. This means that (for public repos at least) if <strong>anyone</strong> built a particular commit, it'll likely be cached. For fairness, then, don't test garnix on repos that already use garnix, and don't retest on the same commits you've already tested.</li>
+        <li>Make sure benchmarks don't affect one another. For example, if you run two different types of CI that write to the same cache (Cachix, garnix, magic-nix-cache, and nixbuild.net), you will get artifically low timings</p>
+        <li>Queuing in builds is accounted for differently between garnix and CIs using GitHub Actions. The amount of time spend in a queue is <strong>not</strong> counted in the total time for GitHub Actions, but it <strong>is</strong> for garnix. It's somewhat rare that you will be queued with garnix, but potentially if you run multiple tests in parallel it will happen.</li>
+    </ul>
+
+    <h1 id="results">The results</h1>
+
+        <p>We ran the benchmarks for three repos:</p>
+
+        <ul>
+            <li><a href="https://github.com/agda/agda">agda</a></li>
+            <li><a href="https://github.com/crytic/echidna">echidna</a></li>
+            <li><a href="https://github.com/helix-editor/helix">helix</a></li>
+        </ul>
+
+        <p>The commits picked were the last ten commits at the time
+        the benchmark started. You can see the individual commit hashes by
+        hovering on a datapoint</p>
+
+        <p>Note that by default we exclude the first commit from any calculations.
+        This is for two reasons</p>
+
+        <ul>
+            <li>The first commit is susceptible to various influences: in
+                particular, with any CI that has a cache, to whether related
+                builds were <i>ever</i> added to the cache. It's also, for
+                setups with a cache, on average much slower than others.
+            </li>
+            <li>For your average project, there will be <i>many more commits</i>
+            than just ten. Letting the first commit contribute so much to
+            the average would therefore be unrepresentative. </li>
+        </ul>
+
+        <div id="dashboard" style="display: none;">
+
+            <!-- Tab Navigation -->
+            <div class="tabs" id="tabs">
+                <!-- Tabs will be populated by JavaScript -->
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filters">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeFirst" onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include first commit
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeOthers" checked onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include other commits
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="includeFailedBuilds" onchange="updateChart()">
+                    <span class="checkmark"></span>
+                    Include failed builds
+                </label>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+
+            <!-- Statistics Container -->
+            <div class="stats" id="stats">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <!-- Platform Legend -->
+            <div class="platforms" id="platforms">
+                <!-- Platform legend will be populated by JavaScript -->
+            </div>
+
+            <p>
+            Some notes:
+
+            <ul>
+                <li>Some of the agda/agda builds were (correctly) failing
+                on all CIs. But GitHub Action Serial fails on first error,
+                and so does not report all errors and all successes. We
+                therefore added a &gt; sign in the relevant averages</li>
+                <li>GitHub Action Serial also <i>incorrectly</i> failed on
+                    all crytic/echidna builds, and was therefore excluded
+                    from those graphs</li>
+                <li>GitHub Actions Parallel and nixbuild.net timed out in all
+                    or some (respectively) of their crytic/echidna builds.
+                    Our code stopped checking the timings after 2 hours, and
+                    so we labelled them with 2 hours and used that to calculate
+                    the average. But this is an underestimate: they did in
+                    fact finish, on average taking around 4 hours. We therefore
+                    again put a &gt; sign in the relevant averages</li>
+                </li>
+                <li>garnix timed out during evaluation of two of the builds of
+                    the first cryptic/echidna commit. This is a <i>different</i>
+                    type of timeout than above, set in the CI instead of in
+                    the benchmark script. Because of this, the builds did in
+                    fact not continue. It was our mistake not to configure
+                    this limit to be higher so the results were more comparable.
+                    It's unclear how best to fairly account for all these cases.
+                    We adopted the same attitude as above, considering this
+                    a lower bound.
+                </li>
+
+            </ul>
+            </p>
+
+            <!-- Summary Chart -->
+            <div class="summary-section">
+
+
+
+                <p>We can also summarize the average slowdown for each CI,
+                relative to the fastest one. We calculated that by, for each
+                repo, normalizing the average of each CI by the fastest, and
+                then averaging <i>those</i> numbers.
+                </p>
+
+                <p>Note that here we still included the timeouts and early
+                failures. Therefore, the average for GitHub Action Serial
+                when agda/agda is included, and GitHub Actions and nixbuild.net
+                when crytic/echidna is included, should be thought of as a
+                <i>lower bound</i>.
+                </p>
+
+                <!-- Repository Filter Controls -->
+                <div class="repo-filters">
+                    <label>Include repositories:</label>
+                    <div id="repoCheckboxes">
+                        <!-- Repository checkboxes will be populated by JavaScript -->
+                    </div>
+
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="includeFirstCommitSummary" onchange="updateSummaryFirstCommitFilter()">
+                        <span class="checkmark"></span>
+                        Include first commit data
+                    </label>
+
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="includeFailedBuildsSummary" onchange="updateSummaryFailedBuildsFilter()">
+                        <span class="checkmark"></span>
+                        Include failed builds
+                    </label>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="summaryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    <h1>Analysis</h1>
+
+    <p>A few facts stand out:</p>
+
+    <ul>
+        <li>magic-nix-cache doesn't seem to help at all with build speeds
+        over having no cache (i.e, over github-actions-parallel).
+        This is surprising since Cachix, which also only differs in having a cache,
+        speeds up builds considerably, and since the project's
+        <a href="https://github.com/DeterminateSystems/magic-nix-cache">README</a>
+        claims a big speedup (which presumably at least some people are seeing
+        if they're using it).
+        Part of the reason seems to be slow uploads to the cache (example <a
+            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>).
+        It could be that <i>serial</i> GitHub Actions builds with magic-nix-cache
+        are faster than serial GitHub Actions builds without, since downloads
+        can be kicked off early while waiting on CPU-intensive work.
+        </li>
+        <li>It's not clear why several CIs choked so badly on cryptic/echidna.
+            The issue seems to always have been the package echidna-redistributable,
+            but sometimes it was seemingly <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18616753532/job/53082350464#step:6:68">
+            very slow uploads</a>, and sometimes <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18624644003/job/53100738727#step:5:478">
+            slow builds</a> (click on the Settings button and then "Show Timestamp" to see timestamps).
+            <a href="https://github.com/garnix-io/benchmark-github/actions/runs/18619179927/job/53088012303">Disk space also seems to have been an issue</a>.
+            It's an outlier that deserves more careful examination, though it
+            does not seem to be a fluke &mdash; it happened consistently on
+            the same package across CIs, and across tests many hours apart,
+            even as other packages built successfully.
+        </li>
+
+        <li>garnix performed best across all repos.
+        </li>
+    </ul>
+
+
+
+    <h1>Future improvements</h1>
+
+    <p>There are a few benchmarks missing:</p>
+
+    <ul>
+        <li>magic-nix-cache with FlakeHub Cache (only available for private repos);</li>
+        <li>garnix with incremental builds (faster for most compiled languages, but involves some manual, per-repo work);</li>
+        <li>nixbuild.net <strong>without</strong> remote store building (slower, but more stable &mdash; though we didn't notice any instabilities).</li>
+        <li>Different runner sizes for GitHub Actions.</li>
+        <li>ARM Linux and Macs. nixbuild.net doesn't support Mac builds yet, and for the others benchmarking may get expensive, however.</li>
+    </ul>
+
+    <p>Ideally, we would also be more systematic in what repositories we check. Most starred repositories that are not starter templates or documentation, with a flake.nix which builds a substantial part of the project (instead of e.g. just devshells) might be a good criterion. Unfortunately, we couldn't figure out how to get GitHub search to accurately show repos, ordered by stars, with a flake.nix.</p>
+
+    <p>It was probably a mistake to let GitHub Actions (serial) fail on first
+    error, since it means it did less work than other CIs. If we were to rerun
+    this, we would change that.</p>
+        <div class="loading" id="loading">Loading data...</div>
+        <div class="error" id="error" style="display: none;">Error loading data. Please check that dashboard_data.json exists.</div>
+
+        <div>
+        </div>
+    </div>
+
+
+    <script src="public/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Builds that should be treated as genuine failures
+# All other builds (not listed here) will be treated as successful,
+# regardless of their original JSON status, since they failed *correctly*
+# These are all the GitHub Actions Serial failures in crytic/echidna
+
+genuine_failures:
+  - repo: "crytic/echidna"
+    platform: "github-actions-serial"
+    commits:
+      - "4c43c1facff9a52cba5873bbc4746b3c5ceb3fc4"
+      - "cc1868e795634982a4fc0ce9ee4e0b30a82027f7"
+      - "4676495b78facabded36caf930ff521fdbd727ff"
+      - "560f16d8655b73dcfefcd9b6a2b3c69b4b22665a"
+      - "b899481b65685d42d2683f758e3d59821e5a9e1f"
+      - "b314059cbb329a9896b14c438b5c8ede5f2880b8"
+      - "cda75168267ed80875862cbc671306910e62e0b9"
+      - "00f14cc2bd65b3192af0cd2b6eefb022d5a91192"
+      - "75d8a22303cdbe4f006da6fb35db7e9f8434e5d1"
+      - "e65bd1c80b451aa05826590dd9fe69e991cda841"
+
+# Builds that correctly failed but failed on first error rather than presenting all errors
+early_fail:
+  - repo: "agda/agda"
+    platform: "github-actions-serial"
+    commits:
+      - "0f42358aa9579c38c6e5b4e7b895a73e39faa49c"
+      - "2f3c34680ea7608c02efb282c47b776f93a36de0"
+      - "4bcf57c71fbb5ce21b0fb38c00682718514ea54e"
+      - "4e958a043a511c93a7b737cc48dfc66d930efa31"
+      - "53f5f135aab30637c94c73b485e41feb538d9e1b"
+      - "5739b425b610874b24044d3c42f6fcbbf9b93c26"
+      - "6448df47715572262973e9db0dd949caf002f888"
+      - "c822b5c40fead11743ad10d3a704dbfcfc2d51ad"
+      - "dec13c0222a98240cc45b925805e6e282ee667be"
+      - "f6dabfd4a203410c9e4885a3969457275c1a39a7"
