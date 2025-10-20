@@ -12,11 +12,11 @@
         <h1>Nix CI Benchmarks</h1>
         <div class="subtitle">Benchmarks for Nix CI build times across different CI platforms</div>
 
-    <p>We picked some open source projects with lots of starts that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
+    <p>We picked some open source projects with lots of stars that have Nix already set up, forked them, and ran various different Nix CIs on the same commits, measuring the time CI took. Because Nix is Nix, these CIs did the same work, broadly speaking, making the comparisons more significant than they would be across wholly different stacks.</p>
 
     <p>We ran the following setups:</p>
 
-    <ul>
+    <ul id="ci-list">
         <li>(1) GitHub Actions, in serial and parallel, without any caching.</li>
         <li>(2) GitHub Actions in parallel with Cachix for caching.</li>
         <li>(3) GitHub Actions in parallel with magic-nix-cache for caching.</li>
@@ -38,7 +38,7 @@
 
     <aside role="alert">
         <p>This benchmark, as well as this text, was created by people at garnix &mdash; one of the
-        CIs benchmarked. This will no doubt influence the results in ways that are
+        CIs benchmarked. This may influence the results in ways that are
         likely favorable to garnix. For example, there is publication bias coming
         from the fact that we probably wouldn't have created this benchmark if
         we didn't think we were faster than alternatives, or published it at
@@ -46,8 +46,10 @@
         </p>
         <p>In addition to looking for yourself at what it is doing, you should
         consider also <strong>running it</strong> yourself, with modifications,
-        and against different repos. And if your conclusions differ from the
-        text or results here, open a PR against our benchmark repo!
+        and against different repos. If your conclusions differ from the
+        text or results here, open a PR against our benchmark repo! And you
+        can also always enable these different CIs <i>on your own repo</i> to
+        see exactly how they perform there.
         </p>
     </aside>
 
@@ -65,7 +67,7 @@
         <li>Gets the last 10 commits in that repo. For each of those commits:
             <ul>
                 <li>It checks the commit out, and finds the derivations to build. This <strong>only includes x86_64-linux builds</strong>.</li>
-                <li>For each of the benchmark types (garnix, magic-nix-cache, etc.):
+                <li>For each of the <a href="#ci-list">CI setups benchmarked</a>:
                     <ul>
                         <li>It makes the changes necessary to set up that type of CI (deleting the existing <code>.github</code> and creating a new one, for example).</li>
                         <li>Pushes that changed commit to a new branch in a separate repo.</li>
@@ -80,9 +82,9 @@
     <p>For configuration:</p>
 
     <ul>
-        <li>We used the default GitHub Linux runner. GitHub Actions has runners of up to 96-cores, which cost correspondingly much. For setups 1-3, this would presumably speed up builds substantially; for 4, presumably only a little. For all of 1-4, it would increase costs by the same amount. Changing this would drive up the costs of benchmarking by quite a lot, however.</li>
+        <li>We used the default GitHub Linux runner. GitHub Actions has runners of up to 96-cores, which cost correspondingly much. For setups 1-3, this would presumably speed up builds substantially; for 4, presumably less so. Changing this would drive up the costs of benchmarking by quite a lot, however.</li>
         <li>Our Cachix cache was 50GB in size.</p>
-        <li>nixbuild.net was left on the default configuration, but the CI Workflow (with remote stores) was used).</li>
+        <li>nixbuild.net was left on the default configuration, but the CI Workflow (with remote stores) was used.</li>
     </ul>
 
     <p>If you'd like to try it out yourself, you can follow these steps:</p>
@@ -100,12 +102,14 @@
     <p><strong>Important notes</strong>:</p>
 
     <ul>
-        <li>You may run up a relatively large bill, across four different services.</li>
+        <li>It will likely cost you some money.</li>
+        <li>It will take a long time, especially if you include the slower options
+            (some of these repos took a full day to check!).</li>
         <li>Check that all CI systems are succeeding and failing the same tests before
           looking at the timings! Sometimes CIs will finish quicker than they
           should because they are failing when they shouldn't. And some setups
           are fail-on-first-error (e.g. GitHub Actions in serial); most aren't.</li>
-        <li>garnix has a <strong>global</strong> cache. This means that (for public repos at least) if <strong>anyone</strong> built a particular commit, it'll likely be cached. For fairness, then, don't test garnix on repos that already use garnix, and don't retest on the same commits you've already test.</li>
+        <li>garnix has a <strong>global</strong> cache. This means that (for public repos at least) if <strong>anyone</strong> built a particular commit, it'll likely be cached. For fairness, then, don't test garnix on repos that already use garnix, and don't retest on the same commits you've already tested.</li>
         <li>Make sure benchmarks don't affect one another. For example, if you run two different types of CI that write to the same cache (Cachix, garnix, magic-nix-cache, and nixbuild.net), you will get artifically low timings</p>
         <li>Queuing in builds is accounted for differently between garnix and CIs using GitHub Actions. The amount of time spend in a queue is <strong>not</strong> counted in the total time for GitHub Actions, but it <strong>is</strong> for garnix. It's somewhat rare that you will be queued with garnix, but potentially if you run multiple tests in parallel it will happen.</li>
     </ul>
@@ -198,7 +202,7 @@
                         <span class="checkmark"></span>
                         Include first commit data
                     </label>
-                    
+
                     <label class="filter-checkbox">
                         <input type="checkbox" id="includeFailedBuildsSummary" onchange="updateSummaryFailedBuildsFilter()">
                         <span class="checkmark"></span>
@@ -218,52 +222,27 @@
 
     <ul>
         <li>magic-nix-cache doesn't seem to help at all with build speeds
-        over having no cache at all (i.e, over github-actions-parallel).
-        This is strange since Cachix, which also only differs in having a cache,
-        speeds up builds considerably.
+        over having no cache (i.e, over github-actions-parallel).
+        This is surprising since Cachix, which also only differs in having a cache,
+        speeds up builds considerably, and since the project's
+        <a href="https://github.com/DeterminateSystems/magic-nix-cache">README</a>
+        claims a big speedup (which presumably at least some people are seeing
+        if they're using it).
         Part of the reason seems to be slow uploads to the cache (example <a
-            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>).
-        T
+            href="https://github.com/garnix-io/benchmark-github/actions/runs/18619774000/job/53089372466">here</a>),
+        but it could also be that it works best with certain repos.
         </li>
-        <li>For some projects, <i>evaluation matters a lot</i>.
+        <li>For some projects, <i>evaluation matters a lot</i>. This was the
+            case with crytic/echidna. nixbuild.net performs well in building,
+            but doesn't help with evaluation. We could provision more powerful
+            GitHub runners, but given how nixbuild.net operates, we would be
+            paying for them even after the evaluation, when they're just waiting
+            on builds.
+        </li>
+        <li>garnix performed best across all repos.
         </li>
     </ul>
 
-    <h1>Cost</h1>
-
-    <p>Besides garnix, all tested CI systems use GitHub Actions. They therefore incur the associated costs in addition to any other costs. For public repos, GitHub Actions is free <strong>if you use a single standard runner</strong>; for private ones it is not, though even a free account gets free minutes.</p>
-
-    <p>Pricing is not, for the most part, fully usage-based:</p>
-    <ul>
-        <li>GitHub plans include some free minutes (amount varies depending on plan)</li>
-        <li>nixbuild.net includes 1,500 free CPU/minutes</li>
-        <li>The garnix free plan includes 1,500 free minutes. The individual plan includes 10,000 minutes.</li>
-        <li>Cachix includes 5GB of free cache for open source projects.</li>
-        <li>garnix also grants <a href="https://garnix.io/docs/open_source">free CI for open source projects</a> that benefit the wider community (all tested repos would qualify).</li>
-    </ul>
-
-    <p>The feature set is also not the same:</p>
-    <ul>
-        <li>Cachix, garnix and nixbuild.net offer a Nix substituter/cache.
-          magic-nix-cache also caches build artifacts, but not in a way that is
-          usable as a substituter without an additional service.</li>
-        <li>All garnix paid plans also include a 2 vCPU, 4 GB RAM server, and 10,000
-          free PR deployment minutes.</li>
-    </ul>
-
-    <p>Because of how billing works, different CIs favor different setups
-    in terms of cost. For example:</p>
-    <ul>
-        <li>GitHub Actions in parallel and garnix work best, price-wise,
-        when different builds are quite independent of one another.</li>
-        <li>Alternatively, for garnix, pricing is better if you combine many
-            packages into one, even though performance is not necessarily
-            very different due to dynamic CPU allocation.</li>
-        <li>GitHub Actions in general, and in parallel even more, works
-        best when each build step fully uses the available CPUs.</li>
-        <li>nixbuild.net is generally very good at billing, by which we mean
-        that there are no ways that are less good </li>
-    </ul>
 
 
     <h1>Future improvements</h1>

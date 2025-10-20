@@ -10,6 +10,7 @@ let summaryChart = null;
 let currentTab = 0;
 let allPlatforms = [];
 let platformColors = {};
+let enabledPlatforms = new Set(); // Track which platforms are enabled for display
 
 // Generate colors for platforms dynamically
 function generatePlatformColors(platforms) {
@@ -74,6 +75,9 @@ async function loadData() {
 
         // Generate colors for all platforms
         platformColors = generatePlatformColors(allPlatforms);
+        
+        // Initialize all platforms as enabled by default
+        enabledPlatforms = new Set(allPlatforms);
 
         // Update dataset colors to use dynamically generated colors
         updateDatasetColors();
@@ -113,12 +117,12 @@ function calculateSummaryData() {
                     if (commit.commit_index === 0 && !includeFirstCommitSummary) {
                         return false;
                     }
-                    
+
                     // Filter by failed builds setting (timed_out is not considered a failed build)
                     if (commit.status === 'failure' && !includeFailedBuilds) {
                         return false;
                     }
-                    
+
                     return true;
                 });
 
@@ -150,8 +154,19 @@ function calculateSummaryData() {
 
     // Average the slowdown factors across repositories
     const summaryData = [];
+    let excludedPlatforms = [];
+
     for (const [platform, slowdownFactors] of Object.entries(platformSlowdownFactors)) {
         if (slowdownFactors.length > 0) {
+            // Check if this is github-actions-serial and crytic/echidna is enabled
+            if (platform === 'github-actions-serial' && enabledRepos.has('crytic/echidna')) {
+                excludedPlatforms.push({
+                    platform: platform,
+                    reason: 'GitHub Actions (Serial) errored in all builds of crytic/echidna, and is therefore not included.'
+                });
+                continue; // Skip this platform
+            }
+
             const avgSlowdownFactor = slowdownFactors.reduce((a, b) => a + b, 0) / slowdownFactors.length;
             summaryData.push({
                 platform: platform,
@@ -161,7 +176,10 @@ function calculateSummaryData() {
         }
     }
 
-    return summaryData.sort((a, b) => a.slowdown_factor - b.slowdown_factor);
+    return {
+        data: summaryData.sort((a, b) => a.slowdown_factor - b.slowdown_factor),
+        excluded: excludedPlatforms
+    };
 }
 
 function createSummaryChart() {
@@ -169,7 +187,9 @@ function createSummaryChart() {
         summaryChart.destroy();
     }
 
-    const summaryData = calculateSummaryData();
+    const summaryResult = calculateSummaryData();
+    const summaryData = summaryResult.data;
+    const excludedPlatforms = summaryResult.excluded;
 
     if (summaryData.length === 0) {
         return;
@@ -235,6 +255,36 @@ function createSummaryChart() {
             }
         }
     });
+
+    // Display exclusion notes if any
+    displayExclusionNotes(excludedPlatforms);
+}
+
+function displayExclusionNotes(excludedPlatforms) {
+    // Find or create exclusion notes container
+    let notesContainer = document.getElementById('exclusionNotes');
+    if (!notesContainer) {
+        notesContainer = document.createElement('div');
+        notesContainer.id = 'exclusionNotes';
+        notesContainer.style.marginTop = '15px';
+        notesContainer.style.fontSize = '14px';
+        notesContainer.style.color = '#666';
+        notesContainer.style.fontStyle = 'italic';
+
+        // Insert after the summary chart
+        const summaryChart = document.getElementById('summaryChart');
+        summaryChart.parentNode.insertBefore(notesContainer, summaryChart.nextSibling);
+    }
+
+    // Clear and populate with exclusion notes
+    notesContainer.innerHTML = '';
+    if (excludedPlatforms.length > 0) {
+        excludedPlatforms.forEach(excluded => {
+            const note = document.createElement('div');
+            note.textContent = excluded.reason;
+            notesContainer.appendChild(note);
+        });
+    }
 }
 
 function createRepoCheckboxes() {
@@ -314,11 +364,81 @@ function createPlatformLegend() {
     platformsContainer.innerHTML = '';
 
     allPlatforms.forEach(platform => {
+        const label = document.createElement('label');
+        label.className = 'platform-checkbox';
+        label.style.cursor = 'pointer';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true; // All platforms enabled by default
+        checkbox.style.display = 'none'; // Hide the actual checkbox
+        checkbox.onchange = () => updatePlatformFilter(platform, checkbox.checked);
+
         const tag = document.createElement('div');
         tag.className = 'platform-tag';
         tag.style.backgroundColor = getPlatformColor(platform);
         tag.textContent = getPlatformDisplayName(platform);
-        platformsContainer.appendChild(tag);
+        
+        // Add visual feedback for checked/unchecked state
+        tag.style.opacity = checkbox.checked ? '1' : '0.4';
+        tag.style.border = checkbox.checked ? '2px solid transparent' : '2px solid #ccc';
+        
+        // Add tooltip based on current state
+        tag.setAttribute('data-tooltip', checkbox.checked ? 'Click to exclude from comparison' : 'Click to include in comparison');
+
+        label.appendChild(checkbox);
+        label.appendChild(tag);
+        platformsContainer.appendChild(label);
+    });
+}
+
+function updatePlatformFilter(platform, enabled) {
+    if (enabled) {
+        enabledPlatforms.add(platform);
+    } else {
+        enabledPlatforms.delete(platform);
+    }
+    
+    // Update the visual appearance of the platform tag
+    const platformsContainer = document.getElementById('platforms');
+    const labels = platformsContainer.getElementsByClassName('platform-checkbox');
+    
+    Array.from(labels).forEach(label => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        const tag = label.querySelector('.platform-tag');
+        
+        if (tag.textContent === getPlatformDisplayName(platform)) {
+            tag.style.opacity = enabled ? '1' : '0.4';
+            tag.style.border = enabled ? '2px solid transparent' : '2px solid #ccc';
+            tag.setAttribute('data-tooltip', enabled ? 'Click to exclude from comparison' : 'Click to include in comparison');
+        }
+    });
+    
+    // Update the current chart to show/hide the platform
+    if (currentTab >= 0) {
+        createChart(allDatasets[currentTab], repoNames[currentTab]);
+    }
+}
+
+function updatePlatformLegendDisplay() {
+    // Update the visual state of platform checkboxes to stay in sync
+    const platformsContainer = document.getElementById('platforms');
+    const labels = platformsContainer.getElementsByClassName('platform-checkbox');
+    
+    Array.from(labels).forEach(label => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        const tag = label.querySelector('.platform-tag');
+        const platformDisplayName = tag.textContent;
+        
+        // Find the original platform name
+        const platform = allPlatforms.find(p => getPlatformDisplayName(p) === platformDisplayName);
+        if (platform) {
+            const isEnabled = enabledPlatforms.has(platform);
+            checkbox.checked = isEnabled;
+            tag.style.opacity = isEnabled ? '1' : '0.4';
+            tag.style.border = isEnabled ? '2px solid transparent' : '2px solid #ccc';
+            tag.setAttribute('data-tooltip', isEnabled ? 'Click to exclude from comparison' : 'Click to include in comparison');
+        }
     });
 }
 
@@ -350,12 +470,12 @@ function filterData(datasets) {
             if (point.x !== 0 && !includeOthers) {
                 return false;
             }
-            
+
             // Filter by build status (only genuine failures are filtered, not timed_out)
             if (point.status === 'failure' && !includeFailedBuildsChart) {
                 return false;
             }
-            
+
             return true;
         });
 
@@ -377,7 +497,7 @@ function calculateStats(datasets) {
     const includeFirst = document.getElementById('includeFirst').checked;
     const includeOthers = document.getElementById('includeOthers').checked;
     const includeFailedBuildsChart = document.getElementById('includeFailedBuilds').checked;
-    
+
     // Apply filtering to datasets for statistics calculation
     const filteredForStats = datasets.map(dataset => {
         const filteredData = dataset.data.filter(point => {
@@ -388,15 +508,15 @@ function calculateStats(datasets) {
             if (point.x !== 0 && !includeOthers) {
                 return false;
             }
-            
+
             // Filter by build status (only genuine failures are filtered, not timed_out)
             if (point.status === 'failure' && !includeFailedBuildsChart) {
                 return false;
             }
-            
+
             return true;
         });
-        
+
         return {
             ...dataset,
             data: filteredData
@@ -429,7 +549,7 @@ function calculateStats(datasets) {
                 // Check if any builds timed out (assuming 120 minutes = 2 hours timeout)
                 const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
                 const hasTimedOut = timedOutCount > 0;
-                
+
                 stats[dataset.label] = {
                     avg: times.reduce((a, b) => a + b, 0) / times.length,
                     min: Math.min(...times),
@@ -523,7 +643,7 @@ function calculateStats(datasets) {
 
             const actualAvg = actualTimes.length > 0 ? actualTimes.reduce((a, b) => a + b, 0) / actualTimes.length : 0;
             const projectedAvg = totalCount > 0 ? projectedSum / totalCount : 0;
-            
+
             // Check for timed out builds in projected method
             const timedOutCount = dataset.data.filter(d => d.status === 'timed_out').length;
             const hasTimedOut = timedOutCount > 0;
@@ -553,11 +673,16 @@ function createChart(datasets, repoName) {
     }
 
     const filteredDatasets = filterData(datasets);
-    
+
     // Create datasets with single continuous line per platform
     const chartDatasets = [];
-    
+
     filteredDatasets.forEach(dataset => {
+        // Skip disabled platforms
+        if (!enabledPlatforms.has(dataset.label)) {
+            return;
+        }
+        
         // Create main dataset with all builds (success + timed_out) in one continuous line
         if (dataset.data.length > 0) {
             chartDatasets.push({
@@ -576,7 +701,7 @@ function createChart(datasets, repoName) {
                 }
             });
         }
-        
+
         // Add failed builds (crosses) - no line connecting them
         if (dataset.failedData && dataset.failedData.length > 0) {
             chartDatasets.push({
@@ -632,7 +757,7 @@ function createChart(datasets, repoName) {
                     }
                 },
                 legend: {
-                    position: 'top'
+                    display: false // Disable Chart.js legend, we'll create a custom one
                 }
             },
             scales: {
@@ -665,6 +790,76 @@ function createChart(datasets, repoName) {
             }
         }
     });
+    
+    // Create custom legend with tooltips
+    createCustomLegend(chartDatasets);
+}
+
+function createCustomLegend(datasets) {
+    // Find or create legend container
+    let legendContainer = document.getElementById('customLegend');
+    if (!legendContainer) {
+        legendContainer = document.createElement('div');
+        legendContainer.id = 'customLegend';
+        legendContainer.style.display = 'flex';
+        legendContainer.style.flexWrap = 'wrap';
+        legendContainer.style.justifyContent = 'center';
+        legendContainer.style.gap = '15px';
+        legendContainer.style.marginBottom = '20px';
+        
+        // Insert before the chart
+        const chartContainer = document.querySelector('.chart-container');
+        chartContainer.parentNode.insertBefore(legendContainer, chartContainer);
+    }
+    
+    // Clear existing legend
+    legendContainer.innerHTML = '';
+    
+    // Get unique platforms from the datasets
+    const platformsInChart = new Set();
+    datasets.forEach(dataset => {
+        const platformName = dataset.label.replace(/ \(failed\)$/, '').replace(/ \(timed out\)$/, '');
+        platformsInChart.add(platformName);
+    });
+    
+    // Create legend items
+    allPlatforms.forEach(platform => {
+        if (!platformsInChart.has(platform)) return; // Skip platforms not in current chart
+        
+        const isEnabled = enabledPlatforms.has(platform);
+        
+        const legendItem = document.createElement('div');
+        legendItem.style.display = 'flex';
+        legendItem.style.alignItems = 'center';
+        legendItem.style.cursor = 'pointer';
+        legendItem.style.opacity = isEnabled ? '1' : '0.4';
+        legendItem.setAttribute('data-tooltip', isEnabled ? 'Click to exclude from comparison' : 'Click to include in comparison');
+        
+        // Color box
+        const colorBox = document.createElement('div');
+        colorBox.style.width = '12px';
+        colorBox.style.height = '12px';
+        colorBox.style.backgroundColor = getPlatformColor(platform);
+        colorBox.style.marginRight = '8px';
+        colorBox.style.borderRadius = '2px';
+        
+        // Label text
+        const labelText = document.createElement('span');
+        labelText.textContent = getPlatformDisplayName(platform);
+        labelText.style.fontSize = '14px';
+        labelText.style.color = '#666';
+        
+        // Click handler
+        legendItem.onclick = () => {
+            updatePlatformFilter(platform, !isEnabled);
+            // Recreate the legend to update tooltips
+            createCustomLegend(datasets);
+        };
+        
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(labelText);
+        legendContainer.appendChild(legendItem);
+    });
 }
 
 function updateStats(datasets) {
@@ -673,12 +868,17 @@ function updateStats(datasets) {
     statsContainer.innerHTML = '';
 
     Object.entries(stats).forEach(([platform, stat]) => {
-        const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
+        // Skip disabled platforms
+        if (!enabledPlatforms.has(platform)) {
+            return;
+        }
         
+        const color = allDatasets[currentTab].find(d => d.label === platform)?.borderColor || '#666';
+
         // Determine asterisk and tooltip text
         let asterisk = '';
         let tooltipText = '';
-        
+
         if (stat.isProjected && stat.hasTimedOut) {
             asterisk = '**';
             tooltipText = `Projected average: ${stat.avg.toFixed(1)}m (actual: ${stat.actualAvg.toFixed(1)}m from ${stat.count} commits, ${stat.missingCount} projected using ${stat.speedFactor.toFixed(2)}x speed factor). Some builds timed out (took longer than 2 hours). These were counted as taking 2 hours.`;
@@ -696,12 +896,12 @@ function updateStats(datasets) {
         if (tooltipText) {
             statCard.setAttribute('data-tooltip', tooltipText);
         }
-        
+
         statCard.innerHTML = `
             <div class="stat-number" style="color: ${color}">${stat.avg.toFixed(1)}m${asterisk}</div>
             <div class="stat-label">${platform}<br>Average Time (${stat.count}/${stat.totalCount || stat.count} commits)</div>
         `;
-        
+
         statsContainer.appendChild(statCard);
     });
 }
@@ -709,11 +909,16 @@ function updateStats(datasets) {
 function updateChart() {
     if (currentTab >= 0) {
         const filteredDatasets = filterData(allDatasets[currentTab]);
-        
+
         // Create datasets with single continuous line per platform (same logic as createChart)
         const chartDatasets = [];
-        
+
         filteredDatasets.forEach(dataset => {
+            // Skip disabled platforms
+            if (!enabledPlatforms.has(dataset.label)) {
+                return;
+            }
+            
             // Create main dataset with all builds (success + timed_out) in one continuous line
             if (dataset.data.length > 0) {
                 chartDatasets.push({
@@ -732,7 +937,7 @@ function updateChart() {
                     }
                 });
             }
-            
+
             // Add failed builds (crosses) - no line connecting them
             if (dataset.failedData && dataset.failedData.length > 0) {
                 chartDatasets.push({
@@ -754,6 +959,9 @@ function updateChart() {
         // Update chart data
         chart.data.datasets = chartDatasets;
         chart.update();
+
+        // Update custom legend
+        createCustomLegend(chartDatasets);
 
         // Update statistics
         updateStats(filteredDatasets);

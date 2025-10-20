@@ -161,7 +161,9 @@ code {
 }
 
 /* Custom instant tooltip */
-.stat-card[data-tooltip]:hover::after {
+.stat-card[data-tooltip]:hover::after,
+.platform-tag[data-tooltip]:hover::after,
+#customLegend [data-tooltip]:hover::after {
     content: attr(data-tooltip);
     position: absolute;
     bottom: 100%;
@@ -181,7 +183,9 @@ code {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-.stat-card[data-tooltip]:hover::before {
+.stat-card[data-tooltip]:hover::before,
+.platform-tag[data-tooltip]:hover::before,
+#customLegend [data-tooltip]:hover::before {
     content: '';
     position: absolute;
     bottom: 100%;
@@ -211,12 +215,32 @@ code {
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.platform-checkbox {
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+}
+
+.platform-checkbox:hover .platform-tag {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
 .platform-tag {
     padding: 6px 12px;
     border-radius: 4px;
     font-size: 12px;
     color: white;
     font-weight: 500;
+    transition: opacity 0.3s ease, border 0.3s ease, transform 0.2s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+/* Custom legend items */
+#customLegend [data-tooltip] {
+    position: relative;
 }
 
 /* Loading state */
